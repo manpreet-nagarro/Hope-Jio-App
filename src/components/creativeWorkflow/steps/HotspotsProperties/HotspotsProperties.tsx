@@ -1,28 +1,94 @@
-import { Box } from "@mui/material";
-import { CTAButton } from "./HotspotsProperties.styles";
-import { useDispatch } from "react-redux";
-import { nextStep } from "@store/creativeSlice/creativeSlice";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-export default function HotspotsProperties() {
-  const dispatch = useDispatch();
+import React, { useState } from "react";
+import { Typography, Button, Tabs, Tab, TextField, Box } from "@mui/material";
 
-  const handleProceed = () => {
-    dispatch(nextStep());
-  };
+import {
+  PageWrapper,
+  MainSection,
+  PreviewContainer,
+  ImageWrapper,
+  StyledImage,
+  Sidebar,
+  Footer,
+  PrimaryButton,
+} from "./HotspotsProperties.styles";
+
+import { useSelector } from "react-redux";
+import type { RootState } from "@store/store";
+
+export default function Hotspots() {
+  const link = useSelector((state: RootState) => state.stepper.link);
+  const [tab, setTab] = useState(0);
 
   return (
-    <div>
-      Hotspots Properties Content
-      <Box display="flex" justifyContent="flex-end" mt={4}>
-        <CTAButton
-          variant="contained"
-          endIcon={<ChevronRightIcon />}
-          onClick={handleProceed}
-          aria-label="Save, Review & Submit"
+    <PageWrapper>
+      {/* LEFT SIDE */}
+      <MainSection elevation={0}>
+        <Box display="flex" justifyContent="space-between">
+          <Typography fontWeight={600}>Hotspots & Properties</Typography>
+        </Box>
+
+        <PreviewContainer>
+          <ImageWrapper>
+            {link ? (
+              <StyledImage src={link} alt="Preview" />
+            ) : (
+              <Typography color="textSecondary">
+                No template image available
+              </Typography>
+            )}
+          </ImageWrapper>
+        </PreviewContainer>
+
+        <Footer>
+          <Button variant="text">← Back</Button>
+          <PrimaryButton variant="contained">
+            Save, Review & Submit →
+          </PrimaryButton>
+        </Footer>
+      </MainSection>
+
+      {/* RIGHT SIDEBAR */}
+      <Sidebar elevation={0}>
+        <Tabs
+          value={tab}
+          onChange={(e, newValue) => setTab(newValue)}
+          variant="fullWidth"
         >
-          Save,Review & Submit
-        </CTAButton>
-      </Box>
-    </div>
+          <Tab label="Hotspots" />
+          <Tab label="Properties" />
+        </Tabs>
+
+        {tab === 0 && (
+          <Box mt={2}>
+            <Typography variant="subtitle2" gutterBottom>
+              Hotspot 1
+            </Typography>
+
+            <TextField
+              fullWidth
+              size="small"
+              label="Hotspot URL"
+              placeholder="Select"
+              sx={{ mb: 2 }}
+            />
+
+            <TextField
+              fullWidth
+              size="small"
+              label="Alt Text"
+              placeholder="New Hotspot"
+            />
+          </Box>
+        )}
+
+        {tab === 1 && (
+          <Box mt={2}>
+            <Typography variant="body2">
+              Properties panel content here...
+            </Typography>
+          </Box>
+        )}
+      </Sidebar>
+    </PageWrapper>
   );
 }

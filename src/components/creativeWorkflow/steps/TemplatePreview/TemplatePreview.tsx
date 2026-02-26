@@ -96,7 +96,7 @@ const TemplatePreview = () => {
           ),
           endAdornment: link ? (
             <InputAdornment position="end">
-              <CloseUrlIcon />
+              <CloseUrlIcon onClick={() => handleClearLink()} />
             </InputAdornment>
           ) : null,
         }}

@@ -30,7 +30,7 @@ export default function WizardCanvas() {
   };
 
   return (
-    <Box p={3}>
+    <Box p={0}>
       <Paper
         sx={{
           p: 3,

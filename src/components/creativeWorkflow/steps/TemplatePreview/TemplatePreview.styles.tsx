@@ -16,7 +16,7 @@ export const PreviewContainer = styled(Box)(({ theme }) => ({
   backgroundColor: "#F3F4F6",
 }));
 export const PreviewInner = styled(Box)(() => ({
-  height: 320,
+  height: 250,
   borderRadius: 10,
   backgroundColor: "#fff",
   border: "1px solid #D1D5DB",
@@ -36,7 +36,7 @@ export const PlaceholderBox = styled(Box)(() => ({
 export const StyledImage = styled("img")({
   width: "100%",
   height: "100%",
-  objectFit: "contain",
+  // objectFit: "cover",
 });
 
 export const Footer = styled(Box)(({ theme }) => ({
