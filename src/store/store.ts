@@ -1,5 +1,5 @@
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './authSlice/authSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./authSlice/authSlice";
 import wireframeReducer from "./wireframeSlice/wireframeSlice";
 import navigationReducer from "./navigatonSlice/navigationSlice";
 import toastReducer from "./toastSlice/toastSlice";
@@ -8,6 +8,7 @@ import slotsReducer from "./slotsSlice/slotsSlice";
 import privilegesReducer from "./privilegesSlice/privilegesSlice";
 import cohortConfigreducer from "./cohortConfigSlice/cohortConfigSlice";
 import scAssignmentStatusFlowReducer from "./assign/scAssignmentStatusFlowSlice";
+import stepperReducer from "./creativeSlice/creativeSlice";
 
 export const store = configureStore({
   reducer: {
@@ -20,7 +21,8 @@ export const store = configureStore({
     slots: slotsReducer,
     privileges: privilegesReducer,
     cohortConfig: cohortConfigreducer,
-    scAssignmentStatusFlow: scAssignmentStatusFlowReducer
+    scAssignmentStatusFlow: scAssignmentStatusFlowReducer,
+    stepper: stepperReducer,
   },
 });
 
