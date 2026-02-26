@@ -1,0 +1,1 @@
+export type ProductOption = "ajio-sps" | "ajio-fashion" | "ajio-kids"; // just an example, will update later

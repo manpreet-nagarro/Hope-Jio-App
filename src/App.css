@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: #333;
+  background: linear-gradient(180deg, #E7ECFF 0%, #F8F9FD 14.42%);
+}
+
+.App {
+  min-height: 100vh;
+}

@@ -1,0 +1,88 @@
+:root {
+  --font-sans: JioType, system-ui, -apple-system, "Segoe UI", Roboto, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  font-weight: 400;
+  color: #000;
+  background-color: #FFF;
+}
+
+body{
+  margin: 0;
+}
+
+@font-face {
+  font-family: 'JioType';
+  src: url('/fonts/JioType-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JioType-Medium-Italic';
+  src: url('/fonts/JioType-MediumItalic.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JioType-Bold';
+  src: url('/fonts/JioType-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+@font-face {
+  font-family: 'JioType-Light';
+  src: url('/fonts/JioType-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JioType-Light-Italic';
+  src: url('/fonts/JioType-LightItalic.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Ensure all elements inherit the app font stack so divs/spans/buttons use JioType */
+html, body, #root {
+  font-family: var(--font-sans);
+}
+
+*, *::before, *::after {
+  font-family: inherit;
+}
+
+/* Remove scrollbar arrow buttons (Chrome, Edge, Safari) */
+::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b5b5b5;
+  border-radius: 20px;
+}
+
+.mb-6{
+  margin-bottom: 1.5rem;
+}

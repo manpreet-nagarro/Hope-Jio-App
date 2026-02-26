@@ -1,0 +1,2 @@
+export const WIREFRAMES_API_BASE_URL = import.meta.env.VITE_API_WIREFRAMES_BASE_URL;
+export const NAVIGATION_API_BASE_URL = import.meta.env.VITE_API_NAVIGATION_BASE_URL;
