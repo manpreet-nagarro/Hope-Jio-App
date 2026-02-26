@@ -10,15 +10,22 @@ export const Wrapper = styled(Paper)(({ theme }) => ({
 
 export const PreviewContainer = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
-  borderRadius: 16,
-  border: "1px solid #E6E6E6",
-  backgroundColor: "#F8F8F8",
-  height: 300,
+  padding: theme.spacing(2),
+  borderRadius: 12,
+  border: "1px solid #E5E7EB",
+  backgroundColor: "#F3F4F6",
+}));
+export const PreviewInner = styled(Box)(() => ({
+  height: 320,
+  borderRadius: 10,
+  backgroundColor: "#fff",
+  border: "1px solid #D1D5DB",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  textAlign: "center",
+  position: "relative",
   overflow: "hidden",
-  cursor: "pointer",
 }));
 
 export const PlaceholderBox = styled(Box)(() => ({
@@ -29,7 +36,7 @@ export const PlaceholderBox = styled(Box)(() => ({
 export const StyledImage = styled("img")({
   width: "100%",
   height: "100%",
-  objectFit: "cover",
+  objectFit: "contain",
 });
 
 export const Footer = styled(Box)(({ theme }) => ({

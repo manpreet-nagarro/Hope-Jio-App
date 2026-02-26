@@ -5,21 +5,27 @@ import {
   Button,
   Typography,
   InputAdornment,
-  IconButton,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import CloseIcon from "@mui/icons-material/Close";
-import { setLink } from "@store/creativeSlice/creativeSlice";
+import { nextStep, setLink } from "@store/creativeSlice/creativeSlice";
 import type { RootState } from "@store/store";
 import { useToast } from "@hooks/useToast";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { prevStep } from "@store/creativeSlice/creativeSlice";
 
 import {
   Wrapper,
   PreviewContainer,
+  PreviewInner,
   PlaceholderBox,
   StyledImage,
   Footer,
 } from "./TemplatePreview.styles";
+import ImageKitIcon from "@assets/icons-svg/creativeWorkspace/imageKitIcon";
+import LinkIcon from "@assets/icons-svg/creativeWorkspace/linkIcon";
+import PreviewIcon from "@assets/icons-svg/creativeWorkspace/previewIcon";
+import CloseUrlIcon from "@assets/icons-svg/creativeWorkspace/closeIcon";
 
 const TemplatePreview = () => {
   const dispatch = useDispatch();
@@ -62,38 +68,8 @@ const TemplatePreview = () => {
           variant="text"
           size="small"
           onClick={handleOpenGoogle}
-          endIcon={
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M7 17H17V7H7V17Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M14 4H20V10"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M10 14L20 4"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          }
-          sx={{ textTransform: "none", color: "#3535F3" }}
+          endIcon={<ImageKitIcon />}
+          sx={{ textTransform: "none", color: "#141414", fontWeight: 500 }}
         >
           Open ImageKit
         </Button>
@@ -103,58 +79,70 @@ const TemplatePreview = () => {
       <TextField
         fullWidth
         size="small"
-        placeholder="Paste ImageKit URL here"
+        placeholder="Create the Template in ImageKit and paste the URL Here"
         value={link}
+        sx={{
+          backgroundColor: "#F8F8F8",
+          border: "1px solid #E0E0E0",
+          "&:hover": { borderColor: "#B5B5B5" },
+          "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+        }}
         onChange={handleLinkChange}
         InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <LinkIcon />
+            </InputAdornment>
+          ),
           endAdornment: link ? (
             <InputAdornment position="end">
-              <IconButton
-                size="small"
-                onClick={handleClearLink}
-                edge="end"
-                sx={{ p: 0.5 }}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
+              <CloseUrlIcon />
             </InputAdornment>
           ) : null,
         }}
       />
 
       {/* Preview Section */}
-      <PreviewContainer onClick={handleOpenGoogle}>
-        {!link ? (
-          <PlaceholderBox>
-            <Typography variant="subtitle1" fontWeight={500}>
-              Template Preview
-            </Typography>
-            <Typography variant="body2">
-              Sample generated on ImageKit will be shown here
-            </Typography>
-          </PlaceholderBox>
-        ) : imageError ? (
-          <PlaceholderBox>
-            <Typography variant="subtitle1" fontWeight={500} color="error">
-              Failed to Load Image
-            </Typography>
-            <Typography variant="body2" color="error">
-              The image URL is broken. Please check the URL.
-            </Typography>
-          </PlaceholderBox>
-        ) : (
-          <StyledImage
-            src={link}
-            alt="Preview Banner"
-            onError={handleImageError}
-          />
-        )}
+      <PreviewContainer>
+        <PreviewInner>
+          {!link ? (
+            <PlaceholderBox>
+              <PreviewIcon size={64} />
+              <Typography variant="subtitle1" fontWeight={500}>
+                Template Preview
+              </Typography>
+              <Typography variant="body2">
+                Sample generated on ImageKit will be shown here
+              </Typography>
+            </PlaceholderBox>
+          ) : imageError ? (
+            <PlaceholderBox>
+              <Typography variant="subtitle1" fontWeight={500} color="error">
+                Failed to Load Image
+              </Typography>
+              <Typography variant="body2" color="error">
+                The image URL is broken. Please check the URL.
+              </Typography>
+            </PlaceholderBox>
+          ) : (
+            <StyledImage
+              src={link}
+              alt="Preview Banner"
+              onError={handleImageError}
+            />
+          )}
+        </PreviewInner>
       </PreviewContainer>
 
       {/* Footer */}
       <Footer>
-        <Button variant="text" sx={{ textTransform: "none" }}>
-          ← Back
+        <Button
+          variant="text"
+          sx={{ textTransform: "none", color: "#000" }}
+          startIcon={<ChevronLeftIcon />}
+          onClick={() => dispatch(prevStep())}
+        >
+          Back
         </Button>
 
         <Button
@@ -166,10 +154,18 @@ const TemplatePreview = () => {
             px: 3,
             backgroundColor: "#4F46E5",
             "&:hover": { backgroundColor: "#4338CA" },
-            "&:disabled": { backgroundColor: "#D1D5DB", color: "#6B7280" },
+            "&:disabled": {
+              backgroundColor: "#4338CA",
+              opacity: "0.3",
+              color: "#fff",
+            },
           }}
+          endIcon={<ChevronRightIcon />}
+          onClick={() => dispatch(nextStep())}
         >
-          {link && !imageError ? "Save and review" : "Continue to hotspots"}
+          {link && !imageError
+            ? "Save & Continue to Hotspots"
+            : "Continue to hotspots"}
         </Button>
       </Footer>
     </Wrapper>

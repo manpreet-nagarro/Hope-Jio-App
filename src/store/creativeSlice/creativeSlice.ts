@@ -21,7 +21,9 @@ const stepperSlice = createSlice({
       state.activeStep += 1;
     },
     prevStep: (state) => {
-      state.activeStep -= 1;
+      if (state.activeStep > 0) {
+        state.activeStep -= 1;
+      }
     },
     setLink: (state, action: PayloadAction<string>) => {
       state.link = action.payload;
