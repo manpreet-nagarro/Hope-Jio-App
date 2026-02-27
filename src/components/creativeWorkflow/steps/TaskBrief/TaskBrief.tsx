@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { nextStep } from "@store/creativeSlice/creativeSlice";
+import { nextStep, setUrls } from "@store/creativeSlice/creativeSlice";
 
 import { Typography, Grid, Divider, Box } from "@mui/material";
 import {
@@ -37,10 +37,12 @@ export default function TaskBrief() {
   const handleProceed = () => {
     dispatch(nextStep());
   };
-
+  dispatch(setUrls(urls));
   return (
     <>
-      <Box sx={{ backgroundColor: "#fff", padding: "30px 40px" }}>
+      <Box
+        sx={{ backgroundColor: "#fff", padding: "30px 40px", margin: "0 10%" }}
+      >
         <Typography variant="h6" fontWeight={600} gutterBottom>
           Task Brief - Component Details
         </Typography>

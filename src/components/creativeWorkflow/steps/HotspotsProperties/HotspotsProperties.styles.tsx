@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Box, Paper, Button } from "@mui/material";
+import { Box, Paper, Button, Tabs } from "@mui/material";
 
 /* Page Layout */
 export const PageWrapper = styled(Box)`
@@ -44,13 +44,16 @@ export const ImageWrapper = styled(Box)`
   justify-content: center;
 `;
 
-/* Actual Image */
 export const StyledImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: contain;
-`;
+  pointer-events: none;
 
+  user-drag: none; /* ✅ Prevent image drag ghost */
+  -webkit-user-drag: none;
+  user-select: none;
+`;
 /* Right Sidebar */
 export const Sidebar = styled(Paper)`
   width: 300px;
@@ -68,12 +71,106 @@ export const Footer = styled(Box)`
 `;
 
 export const PrimaryButton = styled(Button)`
-  background: #4f46e5 !important;
-  color: white !important;
-  border-radius: 20px !important;
-  text-transform: none !important;
+  borderRadius: 24,
+  padding: "10px 24px",
+  textTransform: "none",
+  fontWeight: 600,
+  backgroundColor: "#3535F3",
+`;
+/* Top Header Container */
+export const HeaderContainer = styled(Box)`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+`;
+export const SidebarContainer = styled(Box)`
+  width: 360px;
+  background: #f9fafb;
+  border-left: 1px solid #e5e7eb;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+`;
+
+/* ============================= */
+/* TABS */
+/* ============================= */
+
+export const StyledTabs = styled(Tabs)`
+  margin-bottom: 16px;
+
+  .MuiTabs-indicator {
+    background-color: #4f46e5;
+    height: 2px;
+  }
+
+  .MuiTab-root {
+    text-transform: none;
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .Mui-selected {
+    color: #4f46e5 !important;
+    font-weight: 600;
+  }
+`;
+
+/* ============================= */
+/* HOTSPOT CARD */
+/* ============================= */
+
+export const HotspotCard = styled(Box)<{
+  selected?: boolean;
+}>`
+  background: #f3f4f6;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: ${({ selected }) =>
+    selected ? "2px solid #4f46e5" : "1px solid #e5e7eb"};
+  transition: all 0.2s ease;
 
   &:hover {
-    background: #4338ca !important;
+    border-color: #4f46e5;
+  }
+`;
+/* Title */
+export const HeaderTitle = styled.h3`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+`;
+
+/* Instruction Toast */
+export const InstructionToast = styled(Box)`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eef2f7;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #595959;
+`;
+
+/* Add Hotspot Button */
+export const AddHotspotButton = styled(Button)`
+  text-transform: none !important;
+  border-radius: 20px !important;
+  border: 1px solid #e0e0e0 !important;
+  color: #000093 !important;
+  font-weight: 700 !important;
+
+  &:hover {
+    background: rgba(79, 70, 229, 0.08) !important;
   }
 `;

@@ -33,6 +33,7 @@ export const CTAButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
   fontWeight: 600,
   backgroundColor: "#3535F3",
+  margin: "0 10%",
 }));
 export const Value = styled(Typography)(({ theme }) => ({
   fontSize: 14,

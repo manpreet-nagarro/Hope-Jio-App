@@ -1,74 +1,131 @@
-import React, { useState } from "react";
-import { Typography, Button, Tabs, Tab, TextField, Box } from "@mui/material";
-
-import {
-  PageWrapper,
-  MainSection,
-  PreviewContainer,
-  ImageWrapper,
-  StyledImage,
-  Sidebar,
-  Footer,
-  PrimaryButton,
-} from "./HotspotsProperties.styles";
-
+import { useState, useEffect } from "react";
+import { Box, Typography, TextField, Tab } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { useSelector } from "react-redux";
 import type { RootState } from "@store/store";
+import type { Hotspot } from "./hotspot.types";
+import HotspotCanvas from "./HotSpotCanvas";
+import {
+  AddHotspotButton,
+  HotspotCard,
+  SidebarContainer,
+  StyledTabs,
+} from "./HotspotsProperties.styles";
 
 export default function Hotspots() {
   const link = useSelector((state: RootState) => state.stepper.link);
-  const [tab, setTab] = useState(0);
+  const urls = useSelector((state: RootState) => state.stepper.urls);
+
+  const [hotspots, setHotspots] = useState<Hotspot[]>([]);
+  const [placementIndex, setPlacementIndex] = useState<number | null>(null);
+
+  // Initialize hotspots based on URL count when component mounts
+  useEffect(() => {
+    const initialHotspots: Hotspot[] = urls.map((_, index) => ({
+      id: index,
+      x: null,
+      y: null,
+      width: null,
+      height: null,
+      url: "",
+      altText: "",
+      placed: false,
+    }));
+    setHotspots(initialHotspots);
+  }, [urls]);
+
+  // Log hotspot to URL mapping whenever hotspots change
+  useEffect(() => {
+    console.log("=== HOTSPOT MAPPING ===");
+    hotspots.forEach((spot, index) => {
+      console.log(`Hotspot ${index + 1}:`, {
+        position: spot.x !== null ? `(${spot.x}, ${spot.y})` : "Not placed",
+        size: spot.width ? `${spot.width}x${spot.height}` : "N/A",
+        url: spot.url || "(empty)",
+        altText: spot.altText || "(empty)",
+        placed: spot.placed,
+      });
+    });
+    console.log("=======================");
+  }, [hotspots]);
+
+  const handleAddHotspot = () => {
+    // Find the first unplaced hotspot and set it for placement
+    const firstUnplacedIndex = hotspots.findIndex((h) => !h.placed);
+
+    if (firstUnplacedIndex !== -1) {
+      // If there's an unplaced hotspot, start placing it
+      setPlacementIndex(firstUnplacedIndex);
+      // Initialize the hotspot with default size at center
+      setHotspots((prev) =>
+        prev.map((spot, index) =>
+          index === firstUnplacedIndex
+            ? {
+                ...spot,
+                x: 50,
+                y: 50,
+                width: 20,
+                height: 20,
+              }
+            : spot,
+        ),
+      );
+    }
+  };
 
   return (
-    <PageWrapper>
+    <Box display="flex" gap={2}>
       {/* LEFT SIDE */}
-      <MainSection elevation={0}>
-        <Box display="flex" justifyContent="space-between">
+      <Box flex={1}>
+        <Box display="flex" justifyContent="space-between" mb={2}>
           <Typography fontWeight={600}>Hotspots & Properties</Typography>
+
+          <AddHotspotButton
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={handleAddHotspot}
+            disabled={placementIndex !== null}
+          >
+            Add Hotspot
+          </AddHotspotButton>
         </Box>
 
-        <PreviewContainer>
-          <ImageWrapper>
-            {link ? (
-              <StyledImage src={link} alt="Preview" />
-            ) : (
-              <Typography color="textSecondary">
-                No template image available
-              </Typography>
-            )}
-          </ImageWrapper>
-        </PreviewContainer>
+        <HotspotCanvas
+          imageUrl={link}
+          hotspots={hotspots}
+          setHotspots={setHotspots}
+          placementIndex={placementIndex}
+          setPlacementIndex={setPlacementIndex}
+        />
+      </Box>
 
-        <Footer>
-          <Button variant="text">← Back</Button>
-          <PrimaryButton variant="contained">
-            Save, Review & Submit →
-          </PrimaryButton>
-        </Footer>
-      </MainSection>
-
-      {/* RIGHT SIDEBAR */}
-      <Sidebar elevation={0}>
-        <Tabs
-          value={tab}
-          onChange={(e, newValue) => setTab(newValue)}
-          variant="fullWidth"
-        >
+      <SidebarContainer>
+        <StyledTabs value={0} variant="fullWidth">
           <Tab label="Hotspots" />
           <Tab label="Properties" />
-        </Tabs>
+        </StyledTabs>
 
-        {tab === 0 && (
-          <Box mt={2}>
-            <Typography variant="subtitle2" gutterBottom>
-              Hotspot 1
+        {hotspots.map((spot, index) => (
+          <HotspotCard key={spot.id}>
+            <Typography fontWeight={600}>
+              Hotspot {index + 1}
+              {!spot.placed && (
+                <span style={{ color: "red", marginLeft: 8 }}>Not Placed</span>
+              )}
             </Typography>
 
             <TextField
               fullWidth
               size="small"
               label="Hotspot URL"
-              placeholder="Select"
+              value={spot.url}
+              onChange={(e) =>
+                setHotspots((prev) =>
+                  prev.map((h, i) =>
+                    i === index ? { ...h, url: e.target.value } : h,
+                  ),
+                )
+              }
               sx={{ mb: 2 }}
             />
 
@@ -76,19 +133,18 @@ export default function Hotspots() {
               fullWidth
               size="small"
               label="Alt Text"
-              placeholder="New Hotspot"
+              value={spot.altText}
+              onChange={(e) =>
+                setHotspots((prev) =>
+                  prev.map((h, i) =>
+                    i === index ? { ...h, altText: e.target.value } : h,
+                  ),
+                )
+              }
             />
-          </Box>
-        )}
-
-        {tab === 1 && (
-          <Box mt={2}>
-            <Typography variant="body2">
-              Properties panel content here...
-            </Typography>
-          </Box>
-        )}
-      </Sidebar>
-    </PageWrapper>
+          </HotspotCard>
+        ))}
+      </SidebarContainer>
+    </Box>
   );
 }

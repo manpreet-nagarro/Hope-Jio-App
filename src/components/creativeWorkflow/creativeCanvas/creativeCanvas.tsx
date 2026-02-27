@@ -37,7 +37,6 @@ export default function WizardCanvas() {
           borderRadius: 3,
           backgroundColor: "transparent",
           boxShadow: "none",
-          margin: "0 10%",
         }}
       >
         {renderStep()}

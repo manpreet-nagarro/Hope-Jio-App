@@ -7,12 +7,15 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { nextStep, setLink } from "@store/creativeSlice/creativeSlice";
+import {
+  nextStep,
+  setLink,
+  prevStep,
+} from "@store/creativeSlice/creativeSlice";
 import type { RootState } from "@store/store";
 import { useToast } from "@hooks/useToast";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { prevStep } from "@store/creativeSlice/creativeSlice";
 
 import {
   Wrapper,
@@ -56,7 +59,7 @@ const TemplatePreview = () => {
   };
 
   return (
-    <Wrapper elevation={0}>
+    <Wrapper elevation={0} sx={{ margin: "0 10%" }}>
       <Box
         display="flex"
         justifyContent="space-between"
