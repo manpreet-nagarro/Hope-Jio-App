@@ -20,6 +20,13 @@ const HotspotCanvas: React.FC<Props> = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [resizingId, setResizingId] = useState<number | null>(null);
+  const [resizeStart, setResizeStart] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
     // This is called on HotspotBox click
@@ -35,6 +42,40 @@ const HotspotCanvas: React.FC<Props> = ({
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent) => {
+    // Handle resizing hotspots
+    if (resizingId !== null && resizeStart && wrapperRef.current) {
+      const deltaX = e.clientX - resizeStart.x;
+      const deltaY = e.clientY - resizeStart.y;
+
+      const newWidth = Math.max(30, resizeStart.width + deltaX);
+      const newHeight = Math.max(30, resizeStart.height + deltaY);
+
+      setHotspots((prev) =>
+        prev.map((spot) => {
+          if (spot.id !== resizingId) return spot;
+
+          const newRect = {
+            x: spot.x || 0,
+            y: spot.y || 0,
+            width: newWidth,
+            height: newHeight,
+          };
+
+          // Only update size if no overlap detected
+          if (!hasOverlap(resizingId, newRect)) {
+            return {
+              ...spot,
+              width: newWidth,
+              height: newHeight,
+            };
+          }
+
+          return spot;
+        }),
+      );
+      return;
+    }
+
     // Handle dragging hotspots
     if (draggingId !== null && wrapperRef.current) {
       const rect = wrapperRef.current.getBoundingClientRect();
@@ -56,11 +97,26 @@ const HotspotCanvas: React.FC<Props> = ({
           const maxX = rect.width - width;
           const maxY = rect.height - height;
 
-          return {
-            ...spot,
-            x: Math.max(0, Math.min(newX, maxX)),
-            y: Math.max(0, Math.min(newY, maxY)),
+          const constrainedX = Math.max(0, Math.min(newX, maxX));
+          const constrainedY = Math.max(0, Math.min(newY, maxY));
+
+          const newRect = {
+            x: constrainedX,
+            y: constrainedY,
+            width,
+            height,
           };
+
+          // Only update position if no overlap detected
+          if (!hasOverlap(draggingId, newRect)) {
+            return {
+              ...spot,
+              x: constrainedX,
+              y: constrainedY,
+            };
+          }
+
+          return spot;
         }),
       );
     }
@@ -82,6 +138,53 @@ const HotspotCanvas: React.FC<Props> = ({
       setPlacementIndex(null);
     }
     setDraggingId(null);
+    setResizingId(null);
+    setResizeStart(null);
+  };
+
+  const handleResizeMouseDown = (e: React.MouseEvent, spotId: number) => {
+    e.stopPropagation();
+    const spot = hotspots.find((s) => s.id === spotId);
+    if (spot && spot.width && spot.height) {
+      setResizingId(spotId);
+      setResizeStart({
+        x: e.clientX,
+        y: e.clientY,
+        width: spot.width,
+        height: spot.height,
+      });
+    }
+  };
+
+  // Check if two rectangles overlap
+  const checkOverlap = (rect1: any, rect2: any): boolean => {
+    return !(
+      rect1.x + rect1.width <= rect2.x ||
+      rect2.x + rect2.width <= rect1.x ||
+      rect1.y + rect1.height <= rect2.y ||
+      rect2.y + rect2.height <= rect1.y
+    );
+  };
+
+  // Check if a hotspot overlaps with any other hotspot
+  const hasOverlap = (spotId: number, newRect: any): boolean => {
+    return hotspots.some((spot) => {
+      if (
+        spot.id === spotId ||
+        spot.x === null ||
+        spot.y === null ||
+        spot.width === null ||
+        spot.height === null
+      ) {
+        return false;
+      }
+      return checkOverlap(newRect, {
+        x: spot.x,
+        y: spot.y,
+        width: spot.width,
+        height: spot.height,
+      });
+    });
   };
 
   return (
@@ -150,6 +253,21 @@ const HotspotCanvas: React.FC<Props> = ({
             >
               Hotspot {index + 1}
             </span>
+            <div
+              onMouseDown={(e) => handleResizeMouseDown(e, spot.id)}
+              style={{
+                position: "absolute",
+                bottom: -6,
+                right: -6,
+                width: 12,
+                height: 12,
+                background: "#3B82F6",
+                border: "2px solid white",
+                borderRadius: "50%",
+                cursor: "nwse-resize",
+                zIndex: 30,
+              }}
+            />
           </HotspotBox>
         );
       })}

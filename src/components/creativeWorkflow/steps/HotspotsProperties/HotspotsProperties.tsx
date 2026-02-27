@@ -56,7 +56,7 @@ export default function Hotspots() {
     if (firstUnplacedIndex !== -1) {
       // If there's an unplaced hotspot, start placing it
       setPlacementIndex(firstUnplacedIndex);
-      // Initialize the hotspot with default size at center
+      // Initialize the hotspot with default size (150x150) at center
       setHotspots((prev) =>
         prev.map((spot, index) =>
           index === firstUnplacedIndex
@@ -64,8 +64,8 @@ export default function Hotspots() {
                 ...spot,
                 x: 50,
                 y: 50,
-                width: 20,
-                height: 20,
+                width: 150,
+                height: 150,
               }
             : spot,
         ),
