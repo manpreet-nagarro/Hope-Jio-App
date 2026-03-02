@@ -65,27 +65,69 @@ export default function Hotspots() {
   }, [hotspots]);
 
   const handleAddHotspot = () => {
-    // Find the first unplaced hotspot and set it for placement
-    const firstUnplacedIndex = hotspots.findIndex((h) => !h.placed);
+    if (isPlacing) return;
 
-    if (firstUnplacedIndex !== -1) {
-      // If there's an unplaced hotspot, start placing it
-      setPlacementIndex(firstUnplacedIndex);
-      setIsPlacing(true);
-      setHotspots((prev) =>
-        prev.map((spot, index) =>
-          index === firstUnplacedIndex
-            ? {
-                ...spot,
-                x: 50,
-                y: 50,
-                width: 150,
-                height: 150,
-              }
-            : spot,
-        ),
-      );
+    const firstUnplacedIndex = hotspots.findIndex((h) => !h.placed);
+    if (firstUnplacedIndex === -1) return;
+
+    const boxWidth = 150;
+    const boxHeight = 150;
+    const gap = 20;
+
+    let foundPosition = { x: 50, y: 50 };
+
+    const canvasWidth = 800; // fallback width
+    const canvasHeight = 600; // fallback height
+
+    outerLoop: for (
+      let y = gap;
+      y < canvasHeight - boxHeight;
+      y += boxHeight + gap
+    ) {
+      for (let x = gap; x < canvasWidth - boxWidth; x += boxWidth + gap) {
+        const newRect = { x, y, width: boxWidth, height: boxHeight };
+
+        const overlap = hotspots.some((spot) => {
+          if (
+            spot.x === null ||
+            spot.y === null ||
+            spot.width === null ||
+            spot.height === null
+          ) {
+            return false;
+          }
+
+          return !(
+            newRect.x + newRect.width <= spot.x ||
+            spot.x + spot.width <= newRect.x ||
+            newRect.y + newRect.height <= spot.y ||
+            spot.y + spot.height <= newRect.y
+          );
+        });
+
+        if (!overlap) {
+          foundPosition = { x, y };
+          break outerLoop;
+        }
+      }
     }
+
+    setPlacementIndex(firstUnplacedIndex);
+    setIsPlacing(true);
+
+    setHotspots((prev) =>
+      prev.map((spot, index) =>
+        index === firstUnplacedIndex
+          ? {
+              ...spot,
+              x: foundPosition.x,
+              y: foundPosition.y,
+              width: boxWidth,
+              height: boxHeight,
+            }
+          : spot,
+      ),
+    );
   };
 
   return (
@@ -110,7 +152,7 @@ export default function Hotspots() {
             variant="outlined"
             startIcon={<AddIcon />}
             onClick={handleAddHotspot}
-            disabled={isPlacing || !hasUnplacedHotspot}
+            disabled={!hasUnplacedHotspot}
           >
             Add Hotspot
           </AddHotspotButton>
