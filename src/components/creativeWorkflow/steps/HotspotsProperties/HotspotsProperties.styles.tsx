@@ -174,3 +174,10 @@ export const AddHotspotButton = styled(Button)`
     background: rgba(79, 70, 229, 0.08) !important;
   }
 `;
+export const HotspotCanvasContainer = styled(Box)(({ theme }) => ({
+  marginTop: "16px",
+  padding: "16px",
+  borderRadius: 12,
+  border: "1px solid #E5E7EB",
+  backgroundColor: "#F3F4F6",
+}));

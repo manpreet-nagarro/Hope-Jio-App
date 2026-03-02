@@ -10,7 +10,14 @@ import {
   HotspotCard,
   SidebarContainer,
   StyledTabs,
+  HeaderContainer,
+  HeaderTitle,
+  InstructionToast,
+  HotspotCanvasContainer,
 } from "./HotspotsProperties.styles";
+
+import CloseIcon from "@mui/icons-material/Close";
+import HotspotToastIcon from "@assets/icons-svg/creativeWorkspace/hotSpotToastIcon";
 
 export default function Hotspots() {
   const link = useSelector((state: RootState) => state.stepper.link);
@@ -18,6 +25,7 @@ export default function Hotspots() {
 
   const [hotspots, setHotspots] = useState<Hotspot[]>([]);
   const [placementIndex, setPlacementIndex] = useState<number | null>(null);
+  const [showToast, setShowToast] = useState(true);
 
   // Initialize hotspots based on URL count when component mounts
   useEffect(() => {
@@ -77,9 +85,20 @@ export default function Hotspots() {
     <Box display="flex" gap={2}>
       {/* LEFT SIDE */}
       <Box flex={1}>
-        <Box display="flex" justifyContent="space-between" mb={2}>
-          <Typography fontWeight={600}>Hotspots & Properties</Typography>
+        <HeaderContainer>
+          <HeaderTitle>Hotspots & Properties</HeaderTitle>
 
+          {showToast && (
+            <InstructionToast>
+              <HotspotToastIcon />
+              Click 'Add Hotspot' and then move/resize the box to select the
+              target area.
+              <CloseIcon
+                sx={{ cursor: "pointer", fontSize: "14px" }}
+                onClick={() => setShowToast(false)}
+              />
+            </InstructionToast>
+          )}
           <AddHotspotButton
             variant="outlined"
             startIcon={<AddIcon />}
@@ -88,15 +107,17 @@ export default function Hotspots() {
           >
             Add Hotspot
           </AddHotspotButton>
-        </Box>
+        </HeaderContainer>
 
-        <HotspotCanvas
-          imageUrl={link}
-          hotspots={hotspots}
-          setHotspots={setHotspots}
-          placementIndex={placementIndex}
-          setPlacementIndex={setPlacementIndex}
-        />
+        <HotspotCanvasContainer>
+          <HotspotCanvas
+            imageUrl={link}
+            hotspots={hotspots}
+            setHotspots={setHotspots}
+            placementIndex={placementIndex}
+            setPlacementIndex={setPlacementIndex}
+          />
+        </HotspotCanvasContainer>
       </Box>
 
       <SidebarContainer>
