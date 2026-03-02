@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, TextField, Tab, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Tab,
+  Button,
+  MenuItem,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSelector, useDispatch } from "react-redux";
@@ -139,9 +146,9 @@ export default function Hotspots() {
       }
     }
 
-    const newHotspotId = hotspots.length;
+    const newHotspotId = Date.now();
     const newHotspot: Hotspot = {
-      id: newHotspotId,
+      id: Date.now(),
       x: foundPosition.x,
       y: foundPosition.y,
       width: boxWidth,
@@ -279,6 +286,7 @@ export default function Hotspots() {
             <TextField
               fullWidth
               size="small"
+              select
               label="Hotspot URL"
               value={spot.url}
               onChange={(e) =>
@@ -289,7 +297,25 @@ export default function Hotspots() {
                 )
               }
               sx={{ mb: 2 }}
-            />
+            >
+              {urls.map((urlValue) => {
+                const selectedUrls = hotspots
+                  .filter((h) => h.id !== spot.id)
+                  .map((h) => h.url);
+
+                const isDisabled = selectedUrls.includes(urlValue);
+
+                return (
+                  <MenuItem
+                    key={urlValue}
+                    value={urlValue}
+                    disabled={isDisabled}
+                  >
+                    {urlValue}
+                  </MenuItem>
+                );
+              })}
+            </TextField>
 
             <TextField
               fullWidth
