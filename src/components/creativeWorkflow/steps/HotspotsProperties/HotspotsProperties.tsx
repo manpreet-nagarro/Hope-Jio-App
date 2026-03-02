@@ -177,6 +177,17 @@ export default function Hotspots() {
     }
   };
 
+  // Only consider placed hotspots
+  const placedHotspots = hotspots.filter((h) => h.placed);
+
+  // Check if at least one hotspot exists
+  const hasAtLeastOneHotspot = placedHotspots.length > 0;
+
+  // Check if any placed hotspot has empty URL
+  const hasEmptyUrl = placedHotspots.some((h) => !h.url);
+
+  // Final Save button state
+  const isSaveEnabled = hasAtLeastOneHotspot && !hasEmptyUrl;
   return (
     <Box display="flex" gap={2}>
       {/* LEFT SIDE */}
@@ -229,7 +240,7 @@ export default function Hotspots() {
 
           <Button
             variant="contained"
-            disabled={!isSaveButtonEnabled}
+            disabled={!isSaveEnabled}
             sx={{
               textTransform: "none",
               borderRadius: 20,
