@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, TextField, Tab } from "@mui/material";
+import { Box, Typography, TextField, Tab, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@store/store";
 import type { Hotspot } from "./hotspot.types";
 import HotspotCanvas from "./HotSpotCanvas";
@@ -14,12 +14,17 @@ import {
   HeaderTitle,
   InstructionToast,
   HotspotCanvasContainer,
+  Footer,
 } from "./HotspotsProperties.styles";
 
 import CloseIcon from "@mui/icons-material/Close";
 import HotspotToastIcon from "@assets/icons-svg/creativeWorkspace/hotSpotToastIcon";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { nextStep, prevStep } from "@store/creativeSlice/creativeSlice";
 
 export default function Hotspots() {
+  const dispatch = useDispatch();
   const link = useSelector((state: RootState) => state.stepper.link);
   const urls = useSelector((state: RootState) => state.stepper.urls);
 
@@ -118,6 +123,37 @@ export default function Hotspots() {
             setPlacementIndex={setPlacementIndex}
           />
         </HotspotCanvasContainer>
+        {/* Footer */}
+        <Footer>
+          <Button
+            variant="text"
+            sx={{ textTransform: "none", color: "#000" }}
+            startIcon={<ChevronLeftIcon />}
+            onClick={() => dispatch(prevStep())}
+          >
+            Back
+          </Button>
+
+          <Button
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              borderRadius: 20,
+              px: 3,
+              backgroundColor: "#4F46E5",
+              "&:hover": { backgroundColor: "#4338CA" },
+              "&:disabled": {
+                backgroundColor: "#4338CA",
+                opacity: "0.3",
+                color: "#fff",
+              },
+            }}
+            endIcon={<ChevronRightIcon />}
+            onClick={() => dispatch(nextStep())}
+          >
+            Save,Review & Submit
+          </Button>
+        </Footer>
       </Box>
 
       <SidebarContainer>

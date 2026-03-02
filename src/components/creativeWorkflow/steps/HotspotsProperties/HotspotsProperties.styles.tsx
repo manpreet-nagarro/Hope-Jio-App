@@ -147,6 +147,12 @@ export const AddHotspotButton = styled(Button)`
   &:hover {
     background: rgba(79, 70, 229, 0.08) !important;
   }
+  &.Mui-disabled {
+    color: #9ca3af !important; /* grey text */
+    border: 1px solid #e5e7eb !important; /* light border */
+    background: #f3f4f6 !important; /* light grey background */
+    cursor: not-allowed !important;
+  }
 `;
 export const HotspotCanvasContainer = styled(Box)(({ theme }) => ({
   marginTop: "16px",
