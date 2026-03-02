@@ -100,21 +100,13 @@ export const StyledTabs = styled(Tabs)`
 /* HOTSPOT CARD */
 /* ============================= */
 
-export const HotspotCard = styled(Box)<{
-  selected?: boolean;
-}>`
-  background: #f3f4f6;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 14px;
-  border: ${({ selected }) =>
-    selected ? "2px solid #4f46e5" : "1px solid #e5e7eb"};
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #4f46e5;
-  }
-`;
+export const HotspotCard = styled(Box)(() => ({
+  background: "#F3F4F6",
+  borderRadius: 12,
+  padding: "16px",
+  marginBottom: "16px",
+  position: "relative",
+}));
 /* Title */
 export const HeaderTitle = styled.h3`
   margin: 0;

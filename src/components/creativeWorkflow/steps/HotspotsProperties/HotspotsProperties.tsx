@@ -6,6 +6,7 @@ import {
   Tab,
   Button,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -274,32 +275,30 @@ export default function Hotspots() {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Typography fontWeight={600}>
+              <Typography fontSize={14} fontWeight={600}>
                 Hotspot {index + 1}
-                {!spot.placed && (
-                  <span style={{ color: "red", marginLeft: 8 }}>
-                    Not Placed
-                  </span>
-                )}
               </Typography>
-              <Button
+
+              <IconButton
                 size="small"
-                color="error"
-                startIcon={<DeleteIcon />}
                 onClick={() => handleDeleteHotspot(spot.id)}
                 disabled={hotspots.length === 1}
-                sx={{ fontSize: "12px" }}
+                sx={{
+                  padding: 0.5,
+                }}
               >
-                Delete
-              </Button>
+                <CloseIcon sx={{ fontSize: 16 }} />
+              </IconButton>
             </Box>
 
             <TextField
-              fullWidth
-              size="small"
               select
+              fullWidth
+              variant="standard"
+              size="small"
               label="Hotspot URL"
-              value={spot.url}
+              required
+              value={spot.url || ""}
               onChange={(e) =>
                 setHotspots((prev) =>
                   prev.map((h) =>
@@ -307,8 +306,24 @@ export default function Hotspots() {
                   ),
                 )
               }
-              sx={{ mb: 2 }}
+              SelectProps={{
+                displayEmpty: true,
+              }}
+              InputLabelProps={{
+                shrink: true,
+                sx: {
+                  "& .MuiFormLabel-asterisk": {
+                    color: "red",
+                  },
+                },
+              }}
+              sx={{ mt: 2, mb: 2 }}
             >
+              {/* Placeholder option */}
+              <MenuItem value="" disabled>
+                Select
+              </MenuItem>
+
               {urls.map((urlValue) => {
                 const selectedUrls = hotspots
                   .filter((h) => h.id !== spot.id)
@@ -330,9 +345,11 @@ export default function Hotspots() {
 
             <TextField
               fullWidth
+              variant="standard"
               size="small"
               label="Alt Text"
-              value={spot.altText}
+              placeholder="New Hotspot"
+              value={spot.altText || ""}
               onChange={(e) =>
                 setHotspots((prev) =>
                   prev.map((h) =>
@@ -340,6 +357,10 @@ export default function Hotspots() {
                   ),
                 )
               }
+              InputLabelProps={{
+                shrink: true,
+              }}
+              sx={{ mb: 1 }}
             />
           </HotspotCard>
         ))}
