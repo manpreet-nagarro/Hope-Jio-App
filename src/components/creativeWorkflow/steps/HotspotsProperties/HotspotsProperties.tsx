@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, TextField, Tab, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@store/store";
 import type { Hotspot } from "./hotspot.types";
@@ -32,21 +33,28 @@ export default function Hotspots() {
   const [placementIndex, setPlacementIndex] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(true);
   const [isPlacing, setIsPlacing] = useState(false);
-  const hasUnplacedHotspot = hotspots.some((h) => !h.placed);
 
-  // Initialize hotspots based on URL count when component mounts
+  // Track which hotspots are created (placed)
+  const placedHotspotsCount = hotspots.filter((h) => h.placed).length;
+  const canAddMoreHotspots = placedHotspotsCount < urls.length && !isPlacing;
+  const isSaveButtonEnabled = placedHotspotsCount > 0;
+
+  // Initialize with first hotspot section on load
   useEffect(() => {
-    const initialHotspots: Hotspot[] = urls.map((_, index) => ({
-      id: index,
-      x: null,
-      y: null,
-      width: null,
-      height: null,
-      url: "",
-      altText: "",
-      placed: false,
-    }));
-    setHotspots(initialHotspots);
+    if (urls.length > 0 && hotspots.length === 0) {
+      // Create first hotspot info section (not placed yet)
+      const firstHotspot: Hotspot = {
+        id: 0,
+        x: null,
+        y: null,
+        width: null,
+        height: null,
+        url: "",
+        altText: "",
+        placed: false,
+      };
+      setHotspots([firstHotspot]);
+    }
   }, [urls]);
 
   // Log hotspot to URL mapping whenever hotspots change
@@ -65,10 +73,29 @@ export default function Hotspots() {
   }, [hotspots]);
 
   const handleAddHotspot = () => {
-    if (isPlacing) return;
+    // Check if first hotspot is not placed
+    if (hotspots.length === 1 && !hotspots[0].placed) {
+      // Place the first hotspot
+      const boxWidth = 150;
+      const boxHeight = 150;
+      setHotspots((prev) =>
+        prev.map((spot, index) =>
+          index === 0
+            ? {
+                ...spot,
+                x: 50,
+                y: 50,
+                width: boxWidth,
+                height: boxHeight,
+                placed: true,
+              }
+            : spot,
+        ),
+      );
+      return;
+    }
 
-    const firstUnplacedIndex = hotspots.findIndex((h) => !h.placed);
-    if (firstUnplacedIndex === -1) return;
+    if (!canAddMoreHotspots) return;
 
     const boxWidth = 150;
     const boxHeight = 150;
@@ -112,22 +139,35 @@ export default function Hotspots() {
       }
     }
 
-    setPlacementIndex(firstUnplacedIndex);
-    setIsPlacing(true);
+    const newHotspotId = hotspots.length;
+    const newHotspot: Hotspot = {
+      id: newHotspotId,
+      x: foundPosition.x,
+      y: foundPosition.y,
+      width: boxWidth,
+      height: boxHeight,
+      url: "",
+      altText: "",
+      placed: true,
+    };
 
-    setHotspots((prev) =>
-      prev.map((spot, index) =>
-        index === firstUnplacedIndex
-          ? {
-              ...spot,
-              x: foundPosition.x,
-              y: foundPosition.y,
-              width: boxWidth,
-              height: boxHeight,
-            }
-          : spot,
-      ),
-    );
+    setHotspots((prev) => [...prev, newHotspot]);
+  };
+
+  const handleDeleteHotspot = (hotspotId: number) => {
+    // Prevent deletion if it's the last hotspot
+    if (hotspots.length <= 1) {
+      alert("At least one hotspot is mandatory");
+      return;
+    }
+
+    setHotspots((prev) => prev.filter((spot) => spot.id !== hotspotId));
+
+    // Reset placement if we're deleting the current placement
+    if (placementIndex !== null) {
+      setPlacementIndex(null);
+      setIsPlacing(false);
+    }
   };
 
   return (
@@ -152,7 +192,7 @@ export default function Hotspots() {
             variant="outlined"
             startIcon={<AddIcon />}
             onClick={handleAddHotspot}
-            disabled={!hasUnplacedHotspot}
+            disabled={!canAddMoreHotspots}
           >
             Add Hotspot
           </AddHotspotButton>
@@ -166,6 +206,7 @@ export default function Hotspots() {
             placementIndex={placementIndex}
             setPlacementIndex={setPlacementIndex}
             setIsPlacing={setIsPlacing}
+            onDeleteHotspot={handleDeleteHotspot}
           />
         </HotspotCanvasContainer>
         {/* Footer */}
@@ -181,6 +222,7 @@ export default function Hotspots() {
 
           <Button
             variant="contained"
+            disabled={!isSaveButtonEnabled}
             sx={{
               textTransform: "none",
               borderRadius: 20,
@@ -209,12 +251,30 @@ export default function Hotspots() {
 
         {hotspots.map((spot, index) => (
           <HotspotCard key={spot.id}>
-            <Typography fontWeight={600}>
-              Hotspot {index + 1}
-              {!spot.placed && (
-                <span style={{ color: "red", marginLeft: 8 }}>Not Placed</span>
-              )}
-            </Typography>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography fontWeight={600}>
+                Hotspot {index + 1}
+                {!spot.placed && (
+                  <span style={{ color: "red", marginLeft: 8 }}>
+                    Not Placed
+                  </span>
+                )}
+              </Typography>
+              <Button
+                size="small"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={() => handleDeleteHotspot(spot.id)}
+                disabled={hotspots.length === 1}
+                sx={{ fontSize: "12px" }}
+              >
+                Delete
+              </Button>
+            </Box>
 
             <TextField
               fullWidth
@@ -223,8 +283,8 @@ export default function Hotspots() {
               value={spot.url}
               onChange={(e) =>
                 setHotspots((prev) =>
-                  prev.map((h, i) =>
-                    i === index ? { ...h, url: e.target.value } : h,
+                  prev.map((h) =>
+                    h.id === spot.id ? { ...h, url: e.target.value } : h,
                   ),
                 )
               }
@@ -238,8 +298,8 @@ export default function Hotspots() {
               value={spot.altText}
               onChange={(e) =>
                 setHotspots((prev) =>
-                  prev.map((h, i) =>
-                    i === index ? { ...h, altText: e.target.value } : h,
+                  prev.map((h) =>
+                    h.id === spot.id ? { ...h, altText: e.target.value } : h,
                   ),
                 )
               }

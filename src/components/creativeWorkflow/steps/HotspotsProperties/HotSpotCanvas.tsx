@@ -9,6 +9,7 @@ interface Props {
   placementIndex: number | null;
   setPlacementIndex: (i: number | null) => void;
   setIsPlacing: (val: boolean) => void;
+  onDeleteHotspot?: (hotspotId: number) => void;
 }
 
 const HotspotCanvas: React.FC<Props> = ({
@@ -18,6 +19,7 @@ const HotspotCanvas: React.FC<Props> = ({
   placementIndex,
   setPlacementIndex,
   setIsPlacing,
+  onDeleteHotspot,
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<number | null>(null);
@@ -167,6 +169,21 @@ const HotspotCanvas: React.FC<Props> = ({
     }
   };
 
+  const handleHotspotContextMenu = (e: React.MouseEvent, spotId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Prevent deletion if it's the last hotspot
+    if (hotspots.length <= 1) {
+      alert("At least one hotspot is mandatory");
+      return;
+    }
+
+    if (onDeleteHotspot) {
+      onDeleteHotspot(spotId);
+    }
+  };
+
   // Check if two rectangles overlap
   const checkOverlap = (rect1: any, rect2: any): boolean => {
     return !(
@@ -229,6 +246,7 @@ const HotspotCanvas: React.FC<Props> = ({
             key={spot.id}
             onMouseDown={(e) => handleHotspotMouseDown(e, spot.id)}
             onMouseUp={handleCanvasMouseUp}
+            onContextMenu={(e) => handleHotspotContextMenu(e, spot.id)}
             style={
               {
                 left: `${spot.x}px`,
