@@ -8,6 +8,7 @@ interface Props {
   setHotspots: React.Dispatch<React.SetStateAction<Hotspot[]>>;
   placementIndex: number | null;
   setPlacementIndex: (i: number | null) => void;
+  setIsPlacing: (val: boolean) => void;
 }
 
 const HotspotCanvas: React.FC<Props> = ({
@@ -16,6 +17,7 @@ const HotspotCanvas: React.FC<Props> = ({
   setHotspots,
   placementIndex,
   setPlacementIndex,
+  setIsPlacing,
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<number | null>(null);
@@ -123,20 +125,29 @@ const HotspotCanvas: React.FC<Props> = ({
   };
 
   const handleCanvasMouseUp = () => {
-    // Mark as placed when user releases
-    if (draggingId !== null && placementIndex !== null) {
-      setHotspots((prev) =>
-        prev.map((spot, index) =>
-          index === placementIndex
-            ? {
-                ...spot,
-                placed: true,
-              }
-            : spot,
-        ),
-      );
-      setPlacementIndex(null);
+    // 🔥 Finish placement properly
+    if (placementIndex !== null) {
+      const spot = hotspots[placementIndex];
+
+      // Only mark placed if it has valid size
+      if (
+        spot &&
+        spot.x !== null &&
+        spot.y !== null &&
+        spot.width &&
+        spot.height
+      ) {
+        setHotspots((prev) =>
+          prev.map((s, index) =>
+            index === placementIndex ? { ...s, placed: true } : s,
+          ),
+        );
+
+        setPlacementIndex(null);
+        setIsPlacing(false); // ✅ stop placement mode
+      }
     }
+
     setDraggingId(null);
     setResizingId(null);
     setResizeStart(null);

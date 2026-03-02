@@ -31,6 +31,8 @@ export default function Hotspots() {
   const [hotspots, setHotspots] = useState<Hotspot[]>([]);
   const [placementIndex, setPlacementIndex] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(true);
+  const [isPlacing, setIsPlacing] = useState(false);
+  const hasUnplacedHotspot = hotspots.some((h) => !h.placed);
 
   // Initialize hotspots based on URL count when component mounts
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function Hotspots() {
     if (firstUnplacedIndex !== -1) {
       // If there's an unplaced hotspot, start placing it
       setPlacementIndex(firstUnplacedIndex);
-      // Initialize the hotspot with default size (150x150) at center
+      setIsPlacing(true);
       setHotspots((prev) =>
         prev.map((spot, index) =>
           index === firstUnplacedIndex
@@ -108,7 +110,7 @@ export default function Hotspots() {
             variant="outlined"
             startIcon={<AddIcon />}
             onClick={handleAddHotspot}
-            disabled={placementIndex !== null}
+            disabled={isPlacing || !hasUnplacedHotspot}
           >
             Add Hotspot
           </AddHotspotButton>
@@ -121,6 +123,7 @@ export default function Hotspots() {
             setHotspots={setHotspots}
             placementIndex={placementIndex}
             setPlacementIndex={setPlacementIndex}
+            setIsPlacing={setIsPlacing}
           />
         </HotspotCanvasContainer>
         {/* Footer */}
