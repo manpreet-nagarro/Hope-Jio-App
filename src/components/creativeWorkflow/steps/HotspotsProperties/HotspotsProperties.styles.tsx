@@ -18,32 +18,6 @@ export const MainSection = styled(Paper)`
   flex-direction: column;
 `;
 
-/* Image Preview Container */
-export const PreviewContainer = styled(Box)`
-  margin-top: 12px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  background: #f3f4f6;
-  padding: 16px;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-/* Image Wrapper */
-export const ImageWrapper = styled(Box)`
-  width: 100%;
-  max-width: 900px;
-  aspect-ratio: 16 / 9;
-  background: #ededed;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 export const StyledImage = styled.img`
   width: 100%;
   height: 100%;
@@ -180,4 +154,9 @@ export const HotspotCanvasContainer = styled(Box)(({ theme }) => ({
   borderRadius: 12,
   border: "1px solid #E5E7EB",
   backgroundColor: "#F3F4F6",
+  height: "400px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  overflow: "hidden",
 }));

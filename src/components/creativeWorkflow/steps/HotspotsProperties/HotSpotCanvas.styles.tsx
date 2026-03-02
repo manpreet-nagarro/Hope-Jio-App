@@ -3,13 +3,12 @@ import styled from "styled-components";
 export const CanvasWrapper = styled.div`
   position: relative;
   width: 100%;
-  max-width: 900px;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   border-radius: 10px;
   overflow: hidden;
   background: #ededed;
 
-  user-select: none; /* ✅ Prevent text selection */
+  user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -18,6 +17,9 @@ export const StyledImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  width: 100%;
+
+  display: block;
   pointer-events: none;
 `;
 
