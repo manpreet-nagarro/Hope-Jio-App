@@ -37,7 +37,7 @@ const TemplatePreview = () => {
   const [imageError, setImageError] = useState(false);
 
   const handleOpenGoogle = () => {
-    window.open("https://www.google.com", "_blank");
+    window.open("https://imagekit.io/dashboard", "_blank");
   };
 
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
