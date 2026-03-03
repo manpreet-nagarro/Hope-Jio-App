@@ -41,6 +41,7 @@ export default function Hotspots() {
   const [placementIndex, setPlacementIndex] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(true);
   const [isPlacing, setIsPlacing] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
 
   // Track which hotspots are created (placed)
   const placedHotspotsCount = hotspots.filter((h) => h.placed).length;
@@ -263,131 +264,142 @@ export default function Hotspots() {
       </Box>
 
       <SidebarContainer>
-        <StyledTabs value={0} variant="fullWidth">
+        <StyledTabs
+          value={tabValue}
+          onChange={(_, newValue) => setTabValue(newValue)}
+          variant="fullWidth"
+        >
           <Tab label="Hotspots" />
           <Tab label="Properties" />
         </StyledTabs>
+        <Box>
+          {tabValue === 0 ? (
+            hotspots.map((spot, index) => (
+              <Box key={spot.id} mb={2}>
+                {/* Section Label with Index Badge */}
+                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                  <Typography fontSize={14} fontWeight={600}>
+                    Hotspots
+                  </Typography>
 
-        {hotspots.map((spot, index) => (
-          <Box key={spot.id} mb={2}>
-            {/* Section Label with Index Badge */}
-            <Box display="flex" alignItems="center" gap={1} mb={1}>
-              <Typography fontSize={14} fontWeight={600}>
-                Hotspots
-              </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "#E5E7EB",
+                      borderRadius: "999px",
+                      height: 20,
+                      minWidth: 20,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 12,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {index + 1}
+                  </Box>
+                </Box>
 
-              <Box
-                sx={{
-                  backgroundColor: "#E5E7EB",
-                  borderRadius: "999px",
-                  height: 20,
-                  minWidth: 20,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 12,
-                  fontWeight: 600,
-                }}
-              >
-                {index + 1}
-              </Box>
-            </Box>
-            <HotspotCard key={spot.id}>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography fontSize={14} fontWeight={600}>
-                  Hotspot {index + 1}
-                </Typography>
+                <HotspotCard>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Typography fontSize={14} fontWeight={600}>
+                      Hotspot {index + 1}
+                    </Typography>
 
-                <IconButton
-                  size="small"
-                  onClick={() => handleDeleteHotspot(spot.id)}
-                  disabled={hotspots.length === 1}
-                  sx={{
-                    padding: 0.5,
-                  }}
-                >
-                  <CloseIcon sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Box>
-
-              <TextField
-                select
-                fullWidth
-                variant="standard"
-                size="small"
-                label="Hotspot URL"
-                required
-                value={spot.url || ""}
-                onChange={(e) =>
-                  setHotspots((prev) =>
-                    prev.map((h) =>
-                      h.id === spot.id ? { ...h, url: e.target.value } : h,
-                    ),
-                  )
-                }
-                SelectProps={{
-                  displayEmpty: true,
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                  sx: {
-                    "& .MuiFormLabel-asterisk": {
-                      color: "red",
-                    },
-                  },
-                }}
-                sx={{ mt: 2, mb: 2 }}
-              >
-                {/* Placeholder option */}
-                <MenuItem value="" disabled>
-                  Select
-                </MenuItem>
-
-                {urls.map((urlValue) => {
-                  const selectedUrls = hotspots
-                    .filter((h) => h.id !== spot.id)
-                    .map((h) => h.url);
-
-                  const isDisabled = selectedUrls.includes(urlValue);
-
-                  return (
-                    <MenuItem
-                      key={urlValue}
-                      value={urlValue}
-                      disabled={isDisabled}
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDeleteHotspot(spot.id)}
+                      disabled={hotspots.length === 1}
+                      sx={{ padding: 0.5 }}
                     >
-                      {urlValue}
-                    </MenuItem>
-                  );
-                })}
-              </TextField>
+                      <CloseIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </Box>
 
-              <TextField
-                fullWidth
-                variant="standard"
-                size="small"
-                label="Alt Text"
-                placeholder="New Hotspot"
-                value={spot.altText || ""}
-                onChange={(e) =>
-                  setHotspots((prev) =>
-                    prev.map((h) =>
-                      h.id === spot.id ? { ...h, altText: e.target.value } : h,
-                    ),
-                  )
-                }
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                sx={{ mb: 1 }}
-              />
-            </HotspotCard>
-          </Box>
-        ))}
+                  {/* URL Dropdown */}
+                  <TextField
+                    select
+                    fullWidth
+                    variant="standard"
+                    size="small"
+                    label="Hotspot URL"
+                    required
+                    value={spot.url || ""}
+                    onChange={(e) =>
+                      setHotspots((prev) =>
+                        prev.map((h) =>
+                          h.id === spot.id ? { ...h, url: e.target.value } : h,
+                        ),
+                      )
+                    }
+                    SelectProps={{ displayEmpty: true }}
+                    InputLabelProps={{
+                      shrink: true,
+                      sx: {
+                        "& .MuiFormLabel-asterisk": {
+                          color: "red",
+                        },
+                      },
+                    }}
+                    sx={{ mt: 2, mb: 2 }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select
+                    </MenuItem>
+
+                    {urls.map((urlValue) => {
+                      const selectedUrls = hotspots
+                        .filter((h) => h.id !== spot.id)
+                        .map((h) => h.url);
+
+                      const isDisabled = selectedUrls.includes(urlValue);
+
+                      return (
+                        <MenuItem
+                          key={urlValue}
+                          value={urlValue}
+                          disabled={isDisabled}
+                        >
+                          {urlValue}
+                        </MenuItem>
+                      );
+                    })}
+                  </TextField>
+
+                  {/* Alt Text */}
+                  <TextField
+                    fullWidth
+                    variant="standard"
+                    size="small"
+                    label="Alt Text"
+                    placeholder="New Hotspot"
+                    value={spot.altText || ""}
+                    onChange={(e) =>
+                      setHotspots((prev) =>
+                        prev.map((h) =>
+                          h.id === spot.id
+                            ? { ...h, altText: e.target.value }
+                            : h,
+                        ),
+                      )
+                    }
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ mb: 1 }}
+                  />
+                </HotspotCard>
+              </Box>
+            ))
+          ) : (
+            <Box p={2}>
+              <Typography fontSize={14} fontWeight={500}>
+                Property Tab displaying
+              </Typography>
+            </Box>
+          )}
+        </Box>
       </SidebarContainer>
     </Box>
   );
