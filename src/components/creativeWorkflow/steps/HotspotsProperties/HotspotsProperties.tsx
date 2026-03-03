@@ -30,18 +30,23 @@ import CloseIcon from "@mui/icons-material/Close";
 import HotspotToastIcon from "@assets/icons-svg/creativeWorkspace/hotSpotToastIcon";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { nextStep, prevStep } from "@store/creativeSlice/creativeSlice";
+import {
+  nextStep,
+  prevStep,
+  setHotspots,
+} from "@store/creativeSlice/creativeSlice";
 
 export default function Hotspots() {
   const dispatch = useDispatch();
   const link = useSelector((state: RootState) => state.stepper.link);
   const urls = useSelector((state: RootState) => state.stepper.urls);
 
-  const [hotspots, setHotspots] = useState<Hotspot[]>([]);
   const [placementIndex, setPlacementIndex] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(true);
   const [isPlacing, setIsPlacing] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+
+  const hotspots = useSelector((state: RootState) => state.stepper.hotspots);
 
   // Track which hotspots are created (placed)
   const placedHotspotsCount = hotspots.filter((h) => h.placed).length;
@@ -62,9 +67,9 @@ export default function Hotspots() {
         altText: "",
         placed: false,
       };
-      setHotspots([firstHotspot]);
+      dispatch(setHotspots([firstHotspot]));
     }
-  }, [urls]);
+  }, [urls, hotspots.length, dispatch]);
 
   // Log hotspot to URL mapping whenever hotspots change
   useEffect(() => {
@@ -82,25 +87,25 @@ export default function Hotspots() {
   }, [hotspots]);
 
   const handleAddHotspot = () => {
-    // Check if first hotspot is not placed
     if (hotspots.length === 1 && !hotspots[0].placed) {
-      // Place the first hotspot
+      // Place the first hotspot at center
       const boxWidth = 150;
       const boxHeight = 150;
-      setHotspots((prev) =>
-        prev.map((spot, index) =>
-          index === 0
-            ? {
-                ...spot,
-                x: 50,
-                y: 50,
-                width: boxWidth,
-                height: boxHeight,
-                placed: true,
-              }
-            : spot,
-        ),
+
+      const updated = hotspots.map((spot, index) =>
+        index === 0
+          ? {
+              ...spot,
+              x: 50,
+              y: 50,
+              width: boxWidth,
+              height: boxHeight,
+              placed: true,
+            }
+          : spot,
       );
+
+      dispatch(setHotspots(updated));
       return;
     }
 
@@ -112,8 +117,8 @@ export default function Hotspots() {
 
     let foundPosition = { x: 50, y: 50 };
 
-    const canvasWidth = 800; // fallback width
-    const canvasHeight = 600; // fallback height
+    const canvasWidth = 800;
+    const canvasHeight = 600;
 
     outerLoop: for (
       let y = gap;
@@ -148,7 +153,6 @@ export default function Hotspots() {
       }
     }
 
-    const newHotspotId = Date.now();
     const newHotspot: Hotspot = {
       id: Date.now(),
       x: foundPosition.x,
@@ -160,25 +164,22 @@ export default function Hotspots() {
       placed: true,
     };
 
-    setHotspots((prev) => [...prev, newHotspot]);
+    dispatch(setHotspots([...hotspots, newHotspot]));
   };
-
   const handleDeleteHotspot = (hotspotId: number) => {
-    // Prevent deletion if it's the last hotspot
     if (hotspots.length <= 1) {
       alert("At least one hotspot is mandatory");
       return;
     }
 
-    setHotspots((prev) => prev.filter((spot) => spot.id !== hotspotId));
+    const updated = hotspots.filter((spot) => spot.id !== hotspotId);
+    dispatch(setHotspots(updated));
 
-    // Reset placement if we're deleting the current placement
     if (placementIndex !== null) {
       setPlacementIndex(null);
       setIsPlacing(false);
     }
   };
-
   // Only consider placed hotspots
   const placedHotspots = hotspots.filter((h) => h.placed);
 
@@ -222,7 +223,9 @@ export default function Hotspots() {
           <HotspotCanvas
             imageUrl={link}
             hotspots={hotspots}
-            setHotspots={setHotspots}
+            setHotspots={(updatedHotspots) => {
+              dispatch(setHotspots(updatedHotspots));
+            }}
             placementIndex={placementIndex}
             setPlacementIndex={setPlacementIndex}
             setIsPlacing={setIsPlacing}
@@ -328,13 +331,12 @@ export default function Hotspots() {
                     label="Hotspot URL"
                     required
                     value={spot.url || ""}
-                    onChange={(e) =>
-                      setHotspots((prev) =>
-                        prev.map((h) =>
-                          h.id === spot.id ? { ...h, url: e.target.value } : h,
-                        ),
-                      )
-                    }
+                    onChange={(e) => {
+                      const updated = hotspots.map((h) =>
+                        h.id === spot.id ? { ...h, url: e.target.value } : h,
+                      );
+                      dispatch(setHotspots(updated));
+                    }}
                     SelectProps={{ displayEmpty: true }}
                     InputLabelProps={{
                       shrink: true,
@@ -377,15 +379,14 @@ export default function Hotspots() {
                     label="Alt Text"
                     placeholder="New Hotspot"
                     value={spot.altText || ""}
-                    onChange={(e) =>
-                      setHotspots((prev) =>
-                        prev.map((h) =>
-                          h.id === spot.id
-                            ? { ...h, altText: e.target.value }
-                            : h,
-                        ),
-                      )
-                    }
+                    onChange={(e) => {
+                      const updated = hotspots.map((h) =>
+                        h.id === spot.id
+                          ? { ...h, altText: e.target.value }
+                          : h,
+                      );
+                      dispatch(setHotspots(updated));
+                    }}
                     InputLabelProps={{ shrink: true }}
                     sx={{ mb: 1 }}
                   />

@@ -54,29 +54,29 @@ const HotspotCanvas: React.FC<Props> = ({
       const newWidth = Math.max(30, resizeStart.width + deltaX);
       const newHeight = Math.max(30, resizeStart.height + deltaY);
 
-      setHotspots((prev) =>
-        prev.map((spot) => {
-          if (spot.id !== resizingId) return spot;
+      const updatedHotspots = hotspots.map((spot) => {
+        if (spot.id !== resizingId) return spot;
 
-          const newRect = {
-            x: spot.x || 0,
-            y: spot.y || 0,
+        const newRect = {
+          x: spot.x || 0,
+          y: spot.y || 0,
+          width: newWidth,
+          height: newHeight,
+        };
+
+        // Only update size if no overlap detected
+        if (!hasOverlap(resizingId, newRect)) {
+          return {
+            ...spot,
             width: newWidth,
             height: newHeight,
           };
+        }
 
-          // Only update size if no overlap detected
-          if (!hasOverlap(resizingId, newRect)) {
-            return {
-              ...spot,
-              width: newWidth,
-              height: newHeight,
-            };
-          }
+        return spot;
+      });
 
-          return spot;
-        }),
-      );
+      setHotspots(updatedHotspots);
       return;
     }
 
@@ -86,43 +86,43 @@ const HotspotCanvas: React.FC<Props> = ({
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      setHotspots((prev) =>
-        prev.map((spot) => {
-          if (spot.id !== draggingId) return spot;
+      const updatedHotspots = hotspots.map((spot) => {
+        if (spot.id !== draggingId) return spot;
 
-          const width = spot.width || 0;
-          const height = spot.height || 0;
+        const width = spot.width || 0;
+        const height = spot.height || 0;
 
-          // Center the box on cursor
-          const newX = x - width / 2;
-          const newY = y - height / 2;
+        // Center the box on cursor
+        const newX = x - width / 2;
+        const newY = y - height / 2;
 
-          // Keep within canvas bounds
-          const maxX = rect.width - width;
-          const maxY = rect.height - height;
+        // Keep within canvas bounds
+        const maxX = rect.width - width;
+        const maxY = rect.height - height;
 
-          const constrainedX = Math.max(0, Math.min(newX, maxX));
-          const constrainedY = Math.max(0, Math.min(newY, maxY));
+        const constrainedX = Math.max(0, Math.min(newX, maxX));
+        const constrainedY = Math.max(0, Math.min(newY, maxY));
 
-          const newRect = {
+        const newRect = {
+          x: constrainedX,
+          y: constrainedY,
+          width,
+          height,
+        };
+
+        // Only update position if no overlap detected
+        if (!hasOverlap(draggingId, newRect)) {
+          return {
+            ...spot,
             x: constrainedX,
             y: constrainedY,
-            width,
-            height,
           };
+        }
 
-          // Only update position if no overlap detected
-          if (!hasOverlap(draggingId, newRect)) {
-            return {
-              ...spot,
-              x: constrainedX,
-              y: constrainedY,
-            };
-          }
+        return spot;
+      });
 
-          return spot;
-        }),
-      );
+      setHotspots(updatedHotspots);
     }
   };
 
