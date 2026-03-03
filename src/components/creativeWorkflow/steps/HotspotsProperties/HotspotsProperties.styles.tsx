@@ -69,15 +69,13 @@ export const SidebarContainer = styled(Box)`
   padding: 16px;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  height: 100%;
+  max-height: calc(100vh - 200px);
 `;
-
-/* ============================= */
-/* TABS */
-/* ============================= */
 
 export const StyledTabs = styled(Tabs)`
   margin-bottom: 16px;
+  flex-shrink: 0;
 
   .MuiTabs-indicator {
     background-color: #4f46e5;
@@ -93,6 +91,31 @@ export const StyledTabs = styled(Tabs)`
   .Mui-selected {
     color: #4f46e5 !important;
     font-weight: 600;
+  }
+`;
+
+export const TabContentWrapper = styled(Box)`
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+
+    &:hover {
+      background: #94a3b8;
+    }
   }
 `;
 

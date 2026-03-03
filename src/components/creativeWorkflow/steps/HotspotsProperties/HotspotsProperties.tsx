@@ -24,6 +24,7 @@ import {
   InstructionToast,
   HotspotCanvasContainer,
   Footer,
+  TabContentWrapper,
 } from "./HotspotsProperties.styles";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -234,7 +235,7 @@ export default function Hotspots() {
           <Tab label="Hotspots" />
           <Tab label="Properties" />
         </StyledTabs>
-        <Box>
+        <TabContentWrapper>
           {tabValue === 0 ? (
             hotspots.map((spot, index) => (
               <Box key={spot.id} mb={2}>
@@ -359,7 +360,7 @@ export default function Hotspots() {
               </Typography>
             </Box>
           )}
-        </Box>
+        </TabContentWrapper>
       </SidebarContainer>
     </Box>
   );
