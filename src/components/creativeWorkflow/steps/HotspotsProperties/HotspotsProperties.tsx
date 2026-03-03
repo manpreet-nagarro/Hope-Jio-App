@@ -87,23 +87,22 @@ export default function Hotspots() {
   }, [hotspots]);
 
   const handleAddHotspot = () => {
-    if (hotspots.length === 1 && !hotspots[0].placed) {
-      // Place the first hotspot at center
-      const boxWidth = 150;
-      const boxHeight = 150;
+    const boxWidth = 150;
+    const boxHeight = 150;
+    const baseX = 50;
+    const baseY = 50;
+    const gap = 20; // 👈 control spacing here
 
-      const updated = hotspots.map((spot, index) =>
-        index === 0
-          ? {
-              ...spot,
-              x: 50,
-              y: 50,
-              width: boxWidth,
-              height: boxHeight,
-              placed: true,
-            }
-          : spot,
-      );
+    // If first hotspot exists but not placed → place it
+    if (hotspots.length === 1 && !hotspots[0].placed) {
+      const updated = hotspots.map((spot) => ({
+        ...spot,
+        x: baseX,
+        y: baseY,
+        width: boxWidth,
+        height: boxHeight,
+        placed: true,
+      }));
 
       dispatch(setHotspots(updated));
       return;
@@ -111,52 +110,12 @@ export default function Hotspots() {
 
     if (!canAddMoreHotspots) return;
 
-    const boxWidth = 150;
-    const boxHeight = 150;
-    const gap = 20;
-
-    let foundPosition = { x: 50, y: 50 };
-
-    const canvasWidth = 800;
-    const canvasHeight = 600;
-
-    outerLoop: for (
-      let y = gap;
-      y < canvasHeight - boxHeight;
-      y += boxHeight + gap
-    ) {
-      for (let x = gap; x < canvasWidth - boxWidth; x += boxWidth + gap) {
-        const newRect = { x, y, width: boxWidth, height: boxHeight };
-
-        const overlap = hotspots.some((spot) => {
-          if (
-            spot.x === null ||
-            spot.y === null ||
-            spot.width === null ||
-            spot.height === null
-          ) {
-            return false;
-          }
-
-          return !(
-            newRect.x + newRect.width <= spot.x ||
-            spot.x + spot.width <= newRect.x ||
-            newRect.y + newRect.height <= spot.y ||
-            spot.y + spot.height <= newRect.y
-          );
-        });
-
-        if (!overlap) {
-          foundPosition = { x, y };
-          break outerLoop;
-        }
-      }
-    }
+    const index = hotspots.length;
 
     const newHotspot: Hotspot = {
       id: Date.now(),
-      x: foundPosition.x,
-      y: foundPosition.y,
+      x: baseX + index * (boxWidth + gap),
+      y: baseY,
       width: boxWidth,
       height: boxHeight,
       url: "",
