@@ -54,6 +54,7 @@ const TemplatePreview = ({ isReadOnly = false }: TemplatePreviewProps) => {
 
   const handleClearLink = () => {
     dispatch(setLink(""));
+    dispatch(resetStepsAfter(1));
     setImageError(false);
   };
   const handleNext = () => {
