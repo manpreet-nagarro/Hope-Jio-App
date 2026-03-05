@@ -11,6 +11,7 @@ import {
   nextStep,
   setLink,
   prevStep,
+  markStepCompleted,
 } from "@store/creativeSlice/creativeSlice";
 import type { RootState } from "@store/store";
 import { useToast } from "@hooks/useToast";
@@ -53,7 +54,10 @@ const TemplatePreview = ({ isReadOnly = false }: TemplatePreviewProps) => {
     dispatch(setLink(""));
     setImageError(false);
   };
-
+  const handleNext = () => {
+    dispatch(markStepCompleted(1));
+    dispatch(nextStep());
+  };
   const handleImageError = () => {
     setImageError(true);
     show({
@@ -175,7 +179,7 @@ const TemplatePreview = ({ isReadOnly = false }: TemplatePreviewProps) => {
             },
           }}
           endIcon={<ChevronRightIcon />}
-          onClick={() => dispatch(nextStep())}
+          onClick={() => handleNext()}
         >
           {link && !imageError
             ? "Save & Continue to Hotspots"

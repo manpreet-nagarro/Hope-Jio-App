@@ -9,7 +9,6 @@ import { CLOSE_WIZARD, SAVE_EDITOR } from "@utils/messages";
 import DoneIcon from "@mui/icons-material/Done";
 import CompletedStepIcon from "@assets/icons-svg/completedStepIcon";
 import { FONTS } from "@constants/theme.constants";
-import styled from "styled-components";
 // ...existing code...
 
 const steps = [
@@ -26,6 +25,9 @@ export default function WizardHeader() {
   );
   const visitedSteps = useSelector(
     (state: RootState) => state.stepper.visitedSteps,
+  );
+  const completedSteps = useSelector(
+    (state: RootState) => state.stepper.completedSteps,
   );
 
   const handleStepClick = (index: number) => {
@@ -110,13 +112,13 @@ export default function WizardHeader() {
             }}
           >
             {steps.map((label, index) => {
-              const isCompleted = index < activeStep;
               const isActive = index === activeStep;
+              const isCompleted = completedSteps.includes(index) && !isActive;
               return (
                 <Step key={label} onClick={() => handleStepClick(index)}>
                   <StepLabel
                     icon={
-                      isCompleted && !isActive ? (
+                      isCompleted ? (
                         <Box
                           sx={{
                             border: "2px solid #1ECCB0",
@@ -138,13 +140,12 @@ export default function WizardHeader() {
                     }
                     sx={{
                       cursor: "pointer",
-                      "& .MuiStepIcon-root":
-                        isCompleted && !isActive
-                          ? {
-                              stroke: "#1ECCB0",
-                              strokeWidth: "1px",
-                            }
-                          : {},
+                      "& .MuiStepIcon-root": isCompleted
+                        ? {
+                            stroke: "#1ECCB0",
+                            strokeWidth: "1px",
+                          }
+                        : {},
                     }}
                   >
                     {label}

@@ -8,6 +8,7 @@ interface StepperState {
   hotspots: Hotspot[];
   visitedSteps: number[];
   isSubmitting: boolean;
+  completedSteps: number[];
 }
 
 const initialState: StepperState = {
@@ -17,6 +18,7 @@ const initialState: StepperState = {
   hotspots: [],
   visitedSteps: [0],
   isSubmitting: false,
+  completedSteps: [],
 };
 
 const stepperSlice = createSlice({
@@ -60,6 +62,11 @@ const stepperSlice = createSlice({
     setHotspots(state, action) {
       state.hotspots = action.payload;
     },
+    markStepCompleted: (state, action: PayloadAction<number>) => {
+      if (!state.completedSteps.includes(action.payload)) {
+        state.completedSteps.push(action.payload);
+      }
+    },
   },
 });
 
@@ -73,5 +80,6 @@ export const {
   removeUrl,
   setHotspots,
   setIsSubmitting,
+  markStepCompleted,
 } = stepperSlice.actions;
 export default stepperSlice.reducer;

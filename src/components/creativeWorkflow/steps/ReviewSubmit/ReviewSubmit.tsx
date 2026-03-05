@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Typography, Chip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  markStepCompleted,
   nextStep,
   prevStep,
   setIsSubmitting,
@@ -35,6 +36,7 @@ const ReviewSubmit = () => {
 
   const handleSend = (selectedUser: string) => {
     setIsSubmitted(true);
+    dispatch(markStepCompleted(3));
     dispatch(setIsSubmitting(true));
     setOpenDialog(false);
   };

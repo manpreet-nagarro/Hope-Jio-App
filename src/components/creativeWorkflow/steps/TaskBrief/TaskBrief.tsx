@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { nextStep, setUrls } from "@store/creativeSlice/creativeSlice";
+import {
+  markStepCompleted,
+  nextStep,
+  setUrls,
+} from "@store/creativeSlice/creativeSlice";
 
 import { Typography, Divider, Box } from "@mui/material";
 import {
@@ -38,6 +42,7 @@ export default function TaskBrief({ isReadOnly = false }: TaskBriefProps) {
   const dispatch = useDispatch();
 
   const handleProceed = () => {
+    dispatch(markStepCompleted(0));
     dispatch(nextStep());
   };
   dispatch(setUrls(urls));

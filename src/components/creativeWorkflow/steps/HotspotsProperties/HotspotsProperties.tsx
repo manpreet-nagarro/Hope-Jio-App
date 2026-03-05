@@ -31,6 +31,7 @@ import HotspotToastIcon from "@assets/icons-svg/creativeWorkspace/hotSpotToastIc
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
+  markStepCompleted,
   nextStep,
   prevStep,
   setHotspots,
@@ -55,6 +56,11 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
   // Track which hotspots are created (placed)
   const placedHotspotsCount = hotspots.filter((h) => h.placed).length;
   const canAddMoreHotspots = placedHotspotsCount < urls.length && !isPlacing;
+
+  const handleNext = () => {
+    dispatch(markStepCompleted(2));
+    dispatch(nextStep());
+  };
 
   // Initialize with first hotspot section on load
   useEffect(() => {
@@ -234,7 +240,7 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
               },
             }}
             endIcon={<ChevronRightIcon />}
-            onClick={() => dispatch(nextStep())}
+            onClick={() => handleNext()}
           >
             Save,Review & Submit
           </Button>
