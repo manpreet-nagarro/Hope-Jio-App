@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, Chip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { nextStep, prevStep } from "@store/creativeSlice/creativeSlice";
+import {
+  nextStep,
+  prevStep,
+  setIsSubmitting,
+} from "@store/creativeSlice/creativeSlice";
 import type { RootState } from "@store/store";
 import SendForReviewDialog from "./SendForReviewDialog";
 import CheckIcon from "@mui/icons-material/Check";
@@ -24,11 +28,19 @@ const ReviewSubmit = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const dispatch = useDispatch();
   const link = useSelector((state: RootState) => state.stepper.link);
+  const isSubmitting = useSelector(
+    (state: RootState) => state.stepper.isSubmitting,
+  );
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSend = (selectedUser: string) => {
-    setIsSubmitted(true); // ✅ mark as submitted
+    setIsSubmitted(true);
+    dispatch(setIsSubmitting(true));
     setOpenDialog(false);
+  };
+
+  const handleBack = () => {
+    dispatch(prevStep());
   };
 
   return (
@@ -89,7 +101,7 @@ const ReviewSubmit = () => {
             variant="text"
             sx={{ textTransform: "none", color: "#000" }}
             startIcon={<ChevronLeftIcon />}
-            onClick={() => dispatch(prevStep())}
+            onClick={handleBack}
           >
             Back
           </Button>

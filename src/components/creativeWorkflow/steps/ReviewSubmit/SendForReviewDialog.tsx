@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function SendForReviewDialog({ open, onClose, onSend }: Props) {
-  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedUser, setSelectedUser] = useState("Avinash Gupta");
 
   const handleSend = () => {
     if (!selectedUser) return;
@@ -28,43 +28,68 @@ export default function SendForReviewDialog({ open, onClose, onSend }: Props) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ fontWeight: 700, textAlign: "center" }}>
-        Send Component for Review
+      <Box sx={{ position: "relative", padding: "24px 24px 0" }}>
         <IconButton
           onClick={onClose}
-          sx={{ position: "absolute", right: 12, top: 12 }}
+          sx={{
+            position: "absolute",
+            top: 12,
+            right: 12,
+            color: "#6B7280",
+          }}
         >
           <CloseIcon />
         </IconButton>
-      </DialogTitle>
 
-      <DialogContent>
+        <Typography textAlign="center" fontSize={20} fontWeight={700} mb={1}>
+          Send Component for Review
+        </Typography>
+
         <Typography textAlign="center" mb={2}>
           ‘S1 / C3’
         </Typography>
+      </Box>
 
+      <DialogContent>
         <Box mb={2}>
-          <Typography fontSize={16} color="text.secondary">
+          <Typography fontSize={14} color="#141414" mb={0.5}>
             Department
           </Typography>
-          <Typography fontSize={16} fontWeight={600}>
+
+          <Box
+            sx={{
+              borderBottom: "1px solid #E5E7EB",
+              borderRadius: "6px",
+              padding: "10px 12px",
+              paddingLeft: "0",
+              background: "#fff",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "#000000A6",
+              opacity: "0.65",
+            }}
+          >
             Creative
-          </Typography>
+          </Box>
         </Box>
 
-        <TextField
-          select
-          fullWidth
-          label="User (Creative Checker)"
-          value={selectedUser}
-          onChange={(e) => setSelectedUser(e.target.value)}
-          variant="standard"
-          sx={{ mb: 4 }}
-        >
-          <MenuItem value="">Select</MenuItem>
-          <MenuItem value="Avinash Gupta">Avinash Gupta</MenuItem>
-          <MenuItem value="Rahul Mehta">Rahul Mehta</MenuItem>
-        </TextField>
+        <Box mb={3}>
+          <Typography fontSize={14} color="#6B7280" fontWeight={500} mb={0.5}>
+            User (Creative Checker)
+          </Typography>
+
+          <TextField
+            select
+            fullWidth
+            value={selectedUser}
+            onChange={(e) => setSelectedUser(e.target.value)}
+            variant="standard"
+          >
+            <MenuItem value="">Select</MenuItem>
+            <MenuItem value="Avinash Gupta">Avinash Gupta</MenuItem>
+            <MenuItem value="Ajit Giri">Ajit Giri</MenuItem>
+          </TextField>
+        </Box>
 
         <Box display="flex" justifyContent="flex-end" gap={2}>
           <Button
@@ -73,6 +98,8 @@ export default function SendForReviewDialog({ open, onClose, onSend }: Props) {
             sx={{
               borderRadius: 20,
               textTransform: "none",
+              color: "#000093",
+              borderColor: "#E0E0E0",
             }}
           >
             Cancel
@@ -86,7 +113,7 @@ export default function SendForReviewDialog({ open, onClose, onSend }: Props) {
               borderRadius: 20,
               textTransform: "none",
               px: 3,
-              backgroundColor: "#4F46E5",
+              backgroundColor: "#3535F3",
               "&:hover": { backgroundColor: "#4338CA" },
             }}
           >

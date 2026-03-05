@@ -30,7 +30,11 @@ import LinkIcon from "@assets/icons-svg/creativeWorkspace/linkIcon";
 import PreviewIcon from "@assets/icons-svg/creativeWorkspace/previewIcon";
 import CloseUrlIcon from "@assets/icons-svg/creativeWorkspace/closeIcon";
 
-const TemplatePreview = () => {
+interface TemplatePreviewProps {
+  isReadOnly?: boolean;
+}
+
+const TemplatePreview = ({ isReadOnly = false }: TemplatePreviewProps) => {
   const dispatch = useDispatch();
   const link = useSelector((state: RootState) => state.stepper.link);
   const { show } = useToast();
@@ -82,6 +86,7 @@ const TemplatePreview = () => {
       <TextField
         fullWidth
         size="small"
+        disabled={isReadOnly}
         placeholder="Create the Template in ImageKit and paste the URL Here"
         value={link}
         sx={{
@@ -99,7 +104,13 @@ const TemplatePreview = () => {
           ),
           endAdornment: link ? (
             <InputAdornment position="end">
-              <CloseUrlIcon onClick={() => handleClearLink()} />
+              <CloseUrlIcon
+                onClick={() => !isReadOnly && handleClearLink()}
+                style={{
+                  cursor: isReadOnly ? "not-allowed" : "pointer",
+                  opacity: isReadOnly ? 0.6 : 1,
+                }}
+              />
             </InputAdornment>
           ) : null,
         }}

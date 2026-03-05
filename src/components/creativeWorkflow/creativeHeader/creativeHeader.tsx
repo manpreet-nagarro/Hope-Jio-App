@@ -24,9 +24,13 @@ export default function WizardHeader() {
   const activeStep = useSelector(
     (state: RootState) => state.stepper.activeStep,
   );
+  const visitedSteps = useSelector(
+    (state: RootState) => state.stepper.visitedSteps,
+  );
 
   const handleStepClick = (index: number) => {
-    if (index <= activeStep) {
+    // Allow navigation to visited steps only
+    if (visitedSteps.includes(index)) {
       dispatch(setStep(index));
     }
   };
@@ -107,11 +111,12 @@ export default function WizardHeader() {
           >
             {steps.map((label, index) => {
               const isCompleted = index < activeStep;
+              const isActive = index === activeStep;
               return (
                 <Step key={label} onClick={() => handleStepClick(index)}>
                   <StepLabel
                     icon={
-                      isCompleted ? (
+                      isCompleted && !isActive ? (
                         <Box
                           sx={{
                             border: "2px solid #1ECCB0",
@@ -133,12 +138,13 @@ export default function WizardHeader() {
                     }
                     sx={{
                       cursor: "pointer",
-                      "& .MuiStepIcon-root": isCompleted
-                        ? {
-                            stroke: "#1ECCB0",
-                            strokeWidth: "1px",
-                          }
-                        : {},
+                      "& .MuiStepIcon-root":
+                        isCompleted && !isActive
+                          ? {
+                              stroke: "#1ECCB0",
+                              strokeWidth: "1px",
+                            }
+                          : {},
                     }}
                   >
                     {label}

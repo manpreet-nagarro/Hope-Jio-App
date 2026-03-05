@@ -1,9 +1,8 @@
-import React from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { nextStep, setUrls } from "@store/creativeSlice/creativeSlice";
 
-import { Typography, Grid, Divider, Box } from "@mui/material";
+import { Typography, Divider, Box } from "@mui/material";
 import {
   FieldBlock,
   Label,
@@ -25,7 +24,11 @@ import WireframePageIcon from "@assets/icons-svg/creativeWorkspace/wireframePage
 import MessageGuidanceIcon from "@assets/icons-svg/creativeWorkspace/MessageGuidanceIcon";
 import OtherInfoIcon from "@assets/icons-svg/creativeWorkspace/otherInfoIcon";
 
-export default function TaskBrief() {
+interface TaskBriefProps {
+  isReadOnly?: boolean;
+}
+
+export default function TaskBrief({ isReadOnly = false }: TaskBriefProps) {
   const [showUrls, setShowUrls] = useState(false);
   const urls = [
     "https://ajio.com/winter-collection-desk",
@@ -112,8 +115,12 @@ export default function TaskBrief() {
           <LinkText
             role="button"
             aria-label="View curated URLs"
-            onClick={() => setShowUrls(!showUrls)}
-            sx={{ width: "fit-content" }}
+            onClick={() => !isReadOnly && setShowUrls(!showUrls)}
+            sx={{
+              width: "fit-content",
+              cursor: isReadOnly ? "not-allowed" : "pointer",
+              opacity: isReadOnly ? 0.6 : 1,
+            }}
           >
             <LinkIcon fontSize="small" />
             View Curated URLs (3)

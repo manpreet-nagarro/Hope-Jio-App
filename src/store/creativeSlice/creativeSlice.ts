@@ -6,6 +6,8 @@ interface StepperState {
   link: string;
   urls: string[];
   hotspots: Hotspot[];
+  visitedSteps: number[];
+  isSubmitting: boolean;
 }
 
 const initialState: StepperState = {
@@ -13,6 +15,8 @@ const initialState: StepperState = {
   link: "",
   urls: [],
   hotspots: [],
+  visitedSteps: [0],
+  isSubmitting: false,
 };
 
 const stepperSlice = createSlice({
@@ -21,14 +25,25 @@ const stepperSlice = createSlice({
   reducers: {
     setStep: (state, action: PayloadAction<number>) => {
       state.activeStep = action.payload;
+      // Add this step to visited steps if not already there
+      if (!state.visitedSteps.includes(action.payload)) {
+        state.visitedSteps.push(action.payload);
+      }
     },
     nextStep: (state) => {
       state.activeStep += 1;
+      // Add next step to visited steps
+      if (!state.visitedSteps.includes(state.activeStep)) {
+        state.visitedSteps.push(state.activeStep);
+      }
     },
     prevStep: (state) => {
       if (state.activeStep > 0) {
         state.activeStep -= 1;
       }
+    },
+    setIsSubmitting: (state, action: PayloadAction<boolean>) => {
+      state.isSubmitting = action.payload;
     },
     setLink: (state, action: PayloadAction<string>) => {
       state.link = action.payload;
@@ -57,5 +72,6 @@ export const {
   addUrl,
   removeUrl,
   setHotspots,
+  setIsSubmitting,
 } = stepperSlice.actions;
 export default stepperSlice.reducer;

@@ -13,15 +13,18 @@ export default function WizardCanvas() {
   const activeStep = useSelector(
     (state: RootState) => state.stepper.activeStep,
   );
+  const isSubmitting = useSelector(
+    (state: RootState) => state.stepper.isSubmitting,
+  );
 
   const renderStep = () => {
     switch (activeStep) {
       case 0:
-        return <TaskBrief />;
+        return <TaskBrief isReadOnly={isSubmitting} />;
       case 1:
-        return <TemplatePreview />;
+        return <TemplatePreview isReadOnly={isSubmitting} />;
       case 2:
-        return <HotspotsProperties />;
+        return <HotspotsProperties isReadOnly={isSubmitting} />;
       case 3:
         return <ReviewSubmit />;
       default:

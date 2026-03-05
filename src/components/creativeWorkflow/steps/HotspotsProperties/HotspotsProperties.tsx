@@ -9,7 +9,6 @@ import {
   IconButton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@store/store";
 import type { Hotspot } from "./hotspot.types";
@@ -37,7 +36,11 @@ import {
   setHotspots,
 } from "@store/creativeSlice/creativeSlice";
 
-export default function Hotspots() {
+interface HotspotsProps {
+  isReadOnly?: boolean;
+}
+
+export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
   const dispatch = useDispatch();
   const link = useSelector((state: RootState) => state.stepper.link);
   const urls = useSelector((state: RootState) => state.stepper.urls);
@@ -52,7 +55,6 @@ export default function Hotspots() {
   // Track which hotspots are created (placed)
   const placedHotspotsCount = hotspots.filter((h) => h.placed).length;
   const canAddMoreHotspots = placedHotspotsCount < urls.length && !isPlacing;
-  const isSaveButtonEnabled = placedHotspotsCount > 0;
 
   // Initialize with first hotspot section on load
   useEffect(() => {
@@ -92,7 +94,7 @@ export default function Hotspots() {
     const boxHeight = 150;
     const baseX = 50;
     const baseY = 50;
-    const gap = 20; // 👈 control spacing here
+    const gap = 20;
 
     // If first hotspot exists but not placed → place it
     if (hotspots.length === 1 && !hotspots[0].placed) {
@@ -111,11 +113,24 @@ export default function Hotspots() {
 
     if (!canAddMoreHotspots) return;
 
-    const index = hotspots.length;
+    // Calculate next X position based on existing hotspots' positions
+    let nextX = baseX;
+    const placedHotspots = hotspots.filter((h) => h.placed && h.x !== null);
+
+    if (placedHotspots.length > 0) {
+      // Find the rightmost hotspot
+      const rightmost = placedHotspots.reduce((max, spot) => {
+        const spotRight = (spot.x || 0) + (spot.width || boxWidth);
+        const maxRight = (max.x || 0) + (max.width || boxWidth);
+        return spotRight > maxRight ? spot : max;
+      });
+
+      nextX = (rightmost.x || baseX) + (rightmost.width || boxWidth) + gap;
+    }
 
     const newHotspot: Hotspot = {
       id: Date.now(),
-      x: baseX + index * (boxWidth + gap),
+      x: nextX,
       y: baseY,
       width: boxWidth,
       height: boxHeight,
@@ -173,7 +188,7 @@ export default function Hotspots() {
             variant="outlined"
             startIcon={<AddIcon />}
             onClick={handleAddHotspot}
-            disabled={!canAddMoreHotspots}
+            disabled={!canAddMoreHotspots || isReadOnly}
           >
             Add Hotspot
           </AddHotspotButton>
@@ -275,7 +290,7 @@ export default function Hotspots() {
                     <IconButton
                       size="small"
                       onClick={() => handleDeleteHotspot(spot.id)}
-                      disabled={hotspots.length === 1}
+                      disabled={hotspots.length === 1 || isReadOnly}
                       sx={{ padding: 0.5 }}
                     >
                       <CloseIcon sx={{ fontSize: 16 }} />
@@ -289,6 +304,7 @@ export default function Hotspots() {
                     variant="standard"
                     size="small"
                     label="Hotspot URL"
+                    disabled={isReadOnly}
                     required
                     value={spot.url || ""}
                     onChange={(e) => {
@@ -337,6 +353,7 @@ export default function Hotspots() {
                     variant="standard"
                     size="small"
                     label="Alt Text"
+                    disabled={isReadOnly}
                     placeholder="New Hotspot"
                     value={spot.altText || ""}
                     onChange={(e) => {
