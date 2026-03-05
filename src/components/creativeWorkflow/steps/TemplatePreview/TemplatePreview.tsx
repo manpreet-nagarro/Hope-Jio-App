@@ -12,6 +12,7 @@ import {
   setLink,
   prevStep,
   markStepCompleted,
+  resetStepsAfter,
 } from "@store/creativeSlice/creativeSlice";
 import type { RootState } from "@store/store";
 import { useToast } from "@hooks/useToast";
@@ -47,6 +48,7 @@ const TemplatePreview = ({ isReadOnly = false }: TemplatePreviewProps) => {
 
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setLink(e.target.value));
+    dispatch(resetStepsAfter(1));
     setImageError(false);
   };
 

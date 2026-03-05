@@ -67,6 +67,18 @@ const stepperSlice = createSlice({
         state.completedSteps.push(action.payload);
       }
     },
+    resetStepsAfter: (state, action: PayloadAction<number>) => {
+      const stepIndex = action.payload;
+
+      state.completedSteps = state.completedSteps.filter(
+        (step) => step <= stepIndex,
+      );
+
+      state.visitedSteps = state.visitedSteps.filter(
+        (step) => step <= stepIndex,
+      );
+      state.hotspots = [];
+    },
   },
 });
 
@@ -81,5 +93,6 @@ export const {
   setHotspots,
   setIsSubmitting,
   markStepCompleted,
+  resetStepsAfter,
 } = stepperSlice.actions;
 export default stepperSlice.reducer;
