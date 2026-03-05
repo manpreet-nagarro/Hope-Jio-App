@@ -5,6 +5,7 @@ import {
   markStepCompleted,
   nextStep,
   prevStep,
+  setApprovalSent,
   setIsSubmitting,
 } from "@store/creativeSlice/creativeSlice";
 import type { RootState } from "@store/store";
@@ -32,12 +33,11 @@ const ReviewSubmit = () => {
   const isSubmitting = useSelector(
     (state: RootState) => state.stepper.isSubmitting,
   );
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSend = (selectedUser: string) => {
-    setIsSubmitted(true);
     dispatch(markStepCompleted(3));
     dispatch(setIsSubmitting(true));
+    dispatch(setApprovalSent(true));
     setOpenDialog(false);
   };
 
@@ -58,12 +58,13 @@ const ReviewSubmit = () => {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
+            width="100%"
           >
             <Typography sx={{ fontSize: "18px", fontWeight: "700" }}>
               Review & Submit for Approval
             </Typography>
 
-            {isSubmitted && (
+            {isSubmitting && (
               <Chip
                 icon={<CheckIcon sx={{ color: "#fff !important" }} />}
                 label="Sent for Approval"
@@ -123,7 +124,7 @@ const ReviewSubmit = () => {
               },
             }}
             endIcon={<ChevronRightIcon />}
-            disabled={isSubmitted}
+            disabled={isSubmitting}
             onClick={() => setOpenDialog(true)}
           >
             Submit for Approval

@@ -10,6 +10,7 @@ interface Props {
   setPlacementIndex: (i: number | null) => void;
   setIsPlacing: (val: boolean) => void;
   onDeleteHotspot?: (hotspotId: number) => void;
+  isReadOnly?: boolean;
 }
 
 const HotspotCanvas: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const HotspotCanvas: React.FC<Props> = ({
   setPlacementIndex,
   setIsPlacing,
   onDeleteHotspot,
+  isReadOnly = false,
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<number | null>(null);
@@ -40,12 +42,14 @@ const HotspotCanvas: React.FC<Props> = ({
   };
 
   const handleHotspotMouseDown = (e: React.MouseEvent, spotId: number) => {
+    if (isReadOnly) return;
     e.stopPropagation();
     setSelectedId(spotId);
     setDraggingId(spotId);
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent) => {
+    if (isReadOnly) return;
     // Handle resizing hotspots
     if (resizingId !== null && resizeStart && wrapperRef.current) {
       const deltaX = e.clientX - resizeStart.x;
@@ -156,6 +160,7 @@ const HotspotCanvas: React.FC<Props> = ({
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent, spotId: number) => {
+    if (isReadOnly) return;
     e.stopPropagation();
     const spot = hotspots.find((s) => s.id === spotId);
     if (spot && spot.width && spot.height) {
@@ -224,7 +229,11 @@ const HotspotCanvas: React.FC<Props> = ({
       onMouseLeave={handleCanvasMouseUp}
       onDragStart={(e) => e.preventDefault()}
       style={{
-        cursor: draggingId !== null ? "grabbing" : "default",
+        cursor: isReadOnly
+          ? "default"
+          : draggingId !== null
+            ? "grabbing"
+            : "default",
       }}
     >
       <StyledImage src={imageUrl} alt="Preview" />
@@ -253,7 +262,7 @@ const HotspotCanvas: React.FC<Props> = ({
                 top: `${spot.y}px`,
                 width: `${spot.width}px`,
                 height: `${spot.height}px`,
-                cursor: "move",
+                cursor: isReadOnly ? "default" : "move",
                 border:
                   index === placementIndex
                     ? "2px dashed #3B82F6"
@@ -282,21 +291,23 @@ const HotspotCanvas: React.FC<Props> = ({
             >
               Hotspot {index + 1}
             </span>
-            <div
-              onMouseDown={(e) => handleResizeMouseDown(e, spot.id)}
-              style={{
-                position: "absolute",
-                bottom: -6,
-                right: -6,
-                width: 12,
-                height: 12,
-                background: "#3B82F6",
-                border: "2px solid white",
-                borderRadius: "50%",
-                cursor: "nwse-resize",
-                zIndex: 30,
-              }}
-            />
+            {!isReadOnly && (
+              <div
+                onMouseDown={(e) => handleResizeMouseDown(e, spot.id)}
+                style={{
+                  position: "absolute",
+                  bottom: -6,
+                  right: -6,
+                  width: 12,
+                  height: 12,
+                  background: "#3B82F6",
+                  border: "2px solid white",
+                  borderRadius: "50%",
+                  cursor: "nwse-resize",
+                  zIndex: 30,
+                }}
+              />
+            )}
           </HotspotBox>
         );
       })}

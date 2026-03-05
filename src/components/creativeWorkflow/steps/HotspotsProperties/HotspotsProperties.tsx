@@ -211,6 +211,7 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
             setPlacementIndex={setPlacementIndex}
             setIsPlacing={setIsPlacing}
             onDeleteHotspot={handleDeleteHotspot}
+            isReadOnly={isReadOnly}
           />
         </HotspotCanvasContainer>
         {/* Footer */}

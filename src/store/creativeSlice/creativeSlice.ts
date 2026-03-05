@@ -79,6 +79,9 @@ const stepperSlice = createSlice({
       );
       state.hotspots = [];
     },
+    setApprovalSent: (state, action: PayloadAction<boolean>) => {
+      state.isSubmitting = action.payload;
+    },
   },
 });
 
@@ -94,5 +97,6 @@ export const {
   setIsSubmitting,
   markStepCompleted,
   resetStepsAfter,
+  setApprovalSent,
 } = stepperSlice.actions;
 export default stepperSlice.reducer;
