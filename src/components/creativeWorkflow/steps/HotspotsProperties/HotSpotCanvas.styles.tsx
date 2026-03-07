@@ -5,7 +5,7 @@ export const CanvasWrapper = styled.div<{ isReadOnly?: boolean }>`
   width: 100%;
   height: 100%;
   border-radius: 10px;
-  overflow: hidden;
+  overflow: visible;
   background: #ededed;
 
   user-select: none;

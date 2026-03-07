@@ -5,7 +5,7 @@ import { CanvasWrapper, StyledImage, HotspotBox } from "./HotSpotCanvas.styles";
 interface Props {
   imageUrl: string;
   hotspots: Hotspot[];
-  setHotspots: React.Dispatch<React.SetStateAction<Hotspot[]>>;
+  setHotspots: (hotspots: Hotspot[]) => void;
   placementIndex: number | null;
   setPlacementIndex: (i: number | null) => void;
   setIsPlacing: (val: boolean) => void;
@@ -61,23 +61,11 @@ const HotspotCanvas: React.FC<Props> = ({
       const updatedHotspots = hotspots.map((spot) => {
         if (spot.id !== resizingId) return spot;
 
-        const newRect = {
-          x: spot.x || 0,
-          y: spot.y || 0,
+        return {
+          ...spot,
           width: newWidth,
           height: newHeight,
         };
-
-        // Only update size if no overlap detected
-        if (!hasOverlap(resizingId, newRect)) {
-          return {
-            ...spot,
-            width: newWidth,
-            height: newHeight,
-          };
-        }
-
-        return spot;
       });
 
       setHotspots(updatedHotspots);
@@ -107,23 +95,11 @@ const HotspotCanvas: React.FC<Props> = ({
         const constrainedX = Math.max(0, Math.min(newX, maxX));
         const constrainedY = Math.max(0, Math.min(newY, maxY));
 
-        const newRect = {
+        return {
+          ...spot,
           x: constrainedX,
           y: constrainedY,
-          width,
-          height,
         };
-
-        // Only update position if no overlap detected
-        if (!hasOverlap(draggingId, newRect)) {
-          return {
-            ...spot,
-            x: constrainedX,
-            y: constrainedY,
-          };
-        }
-
-        return spot;
       });
 
       setHotspots(updatedHotspots);
@@ -143,11 +119,10 @@ const HotspotCanvas: React.FC<Props> = ({
         spot.width &&
         spot.height
       ) {
-        setHotspots((prev) =>
-          prev.map((s, index) =>
-            index === placementIndex ? { ...s, placed: true } : s,
-          ),
+        const updatedHotspots = hotspots.map((s, index) =>
+          index === placementIndex ? { ...s, placed: true } : s,
         );
+        setHotspots(updatedHotspots);
 
         setPlacementIndex(null);
         setIsPlacing(false); // ✅ stop placement mode
@@ -187,37 +162,6 @@ const HotspotCanvas: React.FC<Props> = ({
     if (onDeleteHotspot) {
       onDeleteHotspot(spotId);
     }
-  };
-
-  // Check if two rectangles overlap
-  const checkOverlap = (rect1: any, rect2: any): boolean => {
-    return !(
-      rect1.x + rect1.width <= rect2.x ||
-      rect2.x + rect2.width <= rect1.x ||
-      rect1.y + rect1.height <= rect2.y ||
-      rect2.y + rect2.height <= rect1.y
-    );
-  };
-
-  // Check if a hotspot overlaps with any other hotspot
-  const hasOverlap = (spotId: number, newRect: any): boolean => {
-    return hotspots.some((spot) => {
-      if (
-        spot.id === spotId ||
-        spot.x === null ||
-        spot.y === null ||
-        spot.width === null ||
-        spot.height === null
-      ) {
-        return false;
-      }
-      return checkOverlap(newRect, {
-        x: spot.x,
-        y: spot.y,
-        width: spot.width,
-        height: spot.height,
-      });
-    });
   };
 
   return (

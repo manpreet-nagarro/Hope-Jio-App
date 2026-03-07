@@ -54,8 +54,7 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
   const hotspots = useSelector((state: RootState) => state.stepper.hotspots);
 
   // Track which hotspots are created (placed)
-  const placedHotspotsCount = hotspots.filter((h) => h.placed).length;
-  const canAddMoreHotspots = placedHotspotsCount < urls.length && !isPlacing;
+  const canAddMoreHotspots = !isPlacing;
 
   const handleNext = () => {
     dispatch(markStepCompleted(2));
@@ -100,7 +99,6 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
     const boxHeight = 150;
     const baseX = 50;
     const baseY = 50;
-    const gap = 20;
 
     // If first hotspot exists but not placed → place it
     if (hotspots.length === 1 && !hotspots[0].placed) {
@@ -117,26 +115,10 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
       return;
     }
 
-    if (!canAddMoreHotspots) return;
-
-    // Calculate next X position based on existing hotspots' positions
-    let nextX = baseX;
-    const placedHotspots = hotspots.filter((h) => h.placed && h.x !== null);
-
-    if (placedHotspots.length > 0) {
-      // Find the rightmost hotspot
-      const rightmost = placedHotspots.reduce((max, spot) => {
-        const spotRight = (spot.x || 0) + (spot.width || boxWidth);
-        const maxRight = (max.x || 0) + (max.width || boxWidth);
-        return spotRight > maxRight ? spot : max;
-      });
-
-      nextX = (rightmost.x || baseX) + (rightmost.width || boxWidth) + gap;
-    }
-
+    // Place new hotspots at a default position (overlapping) - users can drag to reposition
     const newHotspot: Hotspot = {
       id: Date.now(),
-      x: nextX,
+      x: baseX,
       y: baseY,
       width: boxWidth,
       height: boxHeight,
@@ -167,11 +149,13 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
   // Check if at least one hotspot exists
   const hasAtLeastOneHotspot = placedHotspots.length > 0;
 
-  // Check if any placed hotspot has empty URL
+  // Check if any placed hotspot has empty URL or alt text
   const hasEmptyUrl = placedHotspots.some((h) => !h.url);
+  const hasEmptyAltText = placedHotspots.some((h) => !h.altText);
 
-  // Final Save button state
-  const isSaveEnabled = hasAtLeastOneHotspot && !hasEmptyUrl;
+  // Final Save button state - both URL and alt text are required
+  const isSaveEnabled =
+    hasAtLeastOneHotspot && !hasEmptyUrl && !hasEmptyAltText;
   return (
     <Box display="flex" gap={2}>
       {/* LEFT SIDE */}
@@ -204,7 +188,7 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
           <HotspotCanvas
             imageUrl={link}
             hotspots={hotspots}
-            setHotspots={(updatedHotspots) => {
+            setHotspots={(updatedHotspots: Hotspot[]) => {
               dispatch(setHotspots(updatedHotspots));
             }}
             placementIndex={placementIndex}
@@ -335,23 +319,11 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
                       Select
                     </MenuItem>
 
-                    {urls.map((urlValue) => {
-                      const selectedUrls = hotspots
-                        .filter((h) => h.id !== spot.id)
-                        .map((h) => h.url);
-
-                      const isDisabled = selectedUrls.includes(urlValue);
-
-                      return (
-                        <MenuItem
-                          key={urlValue}
-                          value={urlValue}
-                          disabled={isDisabled}
-                        >
-                          {urlValue}
-                        </MenuItem>
-                      );
-                    })}
+                    {urls.map((urlValue) => (
+                      <MenuItem key={urlValue} value={urlValue}>
+                        {urlValue}
+                      </MenuItem>
+                    ))}
                   </TextField>
 
                   {/* Alt Text */}
@@ -361,6 +333,7 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
                     size="small"
                     label="Alt Text"
                     disabled={isReadOnly}
+                    required
                     placeholder="New Hotspot"
                     value={spot.altText || ""}
                     onChange={(e) => {
@@ -371,7 +344,10 @@ export default function Hotspots({ isReadOnly = false }: HotspotsProps) {
                       );
                       dispatch(setHotspots(updated));
                     }}
-                    InputLabelProps={{ shrink: true }}
+                    InputLabelProps={{
+                      shrink: true,
+                      sx: { "& .MuiFormLabel-asterisk": { color: "red" } },
+                    }}
                     sx={{ mb: 1 }}
                   />
                 </HotspotCard>
